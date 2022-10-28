@@ -481,8 +481,13 @@ function GlobalStoreContextProvider(props) {
             artist: song.artist,
             youTubeId: song.youTubeId
         };
-        let transaction = new UpdateSong_Transaction(this, index, oldSongData, newSongData);        
-        tps.addTransaction(transaction);
+
+        if (!(oldSongData.title === newSongData.title && oldSongData.artist === newSongData.artist && 
+            oldSongData.youTubeId === newSongData.youTubeId)) {
+                let transaction = new UpdateSong_Transaction(this, index, oldSongData, newSongData);        
+                tps.addTransaction(transaction);
+            }
+        store.hideModals();
     }
     store.updateCurrentList = function() {
         async function asyncUpdateCurrentList() {

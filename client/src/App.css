@@ -112,7 +112,7 @@ body {
   background-color: var(--swatch-accent);
 }
 
-#top5-statusbar {
+#playlister-statusbar {
   position: absolute;
   left: 0%;
   top: 90%;

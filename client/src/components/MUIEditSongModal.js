@@ -23,10 +23,25 @@ export default function MUIEditSongModal() {
     const [ youTubeId, setYouTubeId ] = useState(store.currentSong.youTubeId);
 
     function handleConfirmEditSong() {
+
+        let songTitle = title;
+        let songArtist = artist;
+        let songId = youTubeId;
+
+        if (songTitle === "") {
+            songTitle = "Untitled";
+        }
+        if (songArtist === "") {
+            songArtist = "Unknown";
+        }
+        if (songId === "") {
+            songId = "dQw4w9WgXcQ"
+        }
+
         let newSongData = {
-            title: title,
-            artist: artist,
-            youTubeId: youTubeId
+            title: songTitle,
+            artist: songArtist,
+            youTubeId: songId
         };
         store.addUpdateSongTransaction(store.currentSongIndex, newSongData);        
     }
