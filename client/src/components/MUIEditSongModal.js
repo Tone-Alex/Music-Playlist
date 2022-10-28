@@ -9,7 +9,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 500,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -49,55 +49,58 @@ export default function MUIEditSongModal() {
 
     return (
         <Modal
-            open={store.listMarkedForDeletion !== null}
+            open={store.currentModal === "EDIT_SONG"}
         >
             <Box sx={style}>
             <div
             id="edit-song-modal"
-            className="modal is-visible"
+            className="song-modal is-visible"
             data-animation="slideInOutLeft">
             <div
                 id='edit-song-root'
-                className="modal-root">
+                className="song-modal-root">
                 <div
                     id="edit-song-modal-header"
-                    className="modal-north">Edit Song</div>
+                    className="song-modal-north">Edit Song</div>
                 <div
                     id="edit-song-modal-content"
-                    className="modal-center">
-                    <div id="title-prompt" className="modal-prompt">Title:</div>
+                    className="song-modal-center">
+                    <div id="title-prompt" className="modal-prompt">Title:
                     <input 
                         id="edit-song-modal-title-textfield" 
                         className='modal-textfield' 
                         type="text" 
                         defaultValue={title} 
                         onChange={handleUpdateTitle} />
-                    <div id="artist-prompt" className="modal-prompt">Artist:</div>
+                    </div>
+                    <div id="artist-prompt" className="modal-prompt">Artist:
                     <input 
                         id="edit-song-modal-artist-textfield" 
                         className='modal-textfield' 
                         type="text" 
                         defaultValue={artist} 
                         onChange={handleUpdateArtist} />
-                    <div id="you-tube-id-prompt" className="modal-prompt">You Tube Id:</div>
+                    </div>
+                    <div id="you-tube-id-prompt" className="modal-prompt">YouTube Id:
                     <input 
                         id="edit-song-modal-youTubeId-textfield" 
                         className='modal-textfield' 
                         type="text" 
                         defaultValue={youTubeId} 
                         onChange={handleUpdateYouTubeId} />
+                    </div>
                 </div>
-                <div className="modal-south">
+                <div className="song-modal-south">
                     <input 
                         type="button" 
                         id="edit-song-confirm-button" 
-                        className="modal-button" 
+                        className="song-modal-button" 
                         value='Confirm' 
                         onClick={handleConfirmEditSong} />
                     <input 
                         type="button" 
                         id="edit-song-cancel-button" 
-                        className="modal-button" 
+                        className="song-modal-button" 
                         value='Cancel' 
                         onClick={handleCancelEditSong} />
                 </div>

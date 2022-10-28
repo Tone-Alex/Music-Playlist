@@ -188,7 +188,7 @@ body {
 
 .list-card-button {
   float: right;
-  transform: scale(2);
+  transform: scale(1);
 }
 
 #workspace-home,
@@ -263,7 +263,62 @@ input {
 
 /* THIS STYLE SHEET MANAGES STYLE FOR OUR MODAL, i.e. DIALOG BOX */
 
-.modal {
+/* MODAL FOR EDITING A SONG */
+/* .song-modal {
+  position: absolute;
+  top: 30%;
+  left: 30%;
+} */
+
+.song-modal-root {
+  position: relative;
+  /* width: 500px; */
+  display: flex;
+  flex-direction: column;
+  background: var(--swatch-complement);
+  cursor: default;
+  /* border-width: 2px; */
+  /* border-color: black; */
+  /* border-style: solid; */
+  /* box-shadow: 5px 10px #888888; */
+}
+
+.song-modal-root > * {
+  padding: 1rem;
+}
+
+.song-modal-north {
+  font-size:32pt;
+  font-weight: bold;
+  background-color: #669966;
+  color:white;
+}
+
+.song-modal-center {
+  display: flex;
+  flex-direction: column;
+  font-size: 20pt;
+  font-weight: bold;
+  border-bottom: 1px solid black;
+}
+.song-modal-center > div {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.song-modal-south {
+  display:flex;
+  flex-direction: row;
+  background-color: lightgray;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+/* .modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -280,7 +335,7 @@ input {
   opacity: 0;
   transition: all 0.35s ease-in;
   font-family: var(--font-primary);
-}
+} */
 
 .modal.is-visible {
   visibility: visible;
