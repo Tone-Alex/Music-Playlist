@@ -72,7 +72,7 @@ export default function RegisterScreen() {
                                 <TextField
                                     required
                                     fullWidth
-                                    id="email"
+                                    id="email"                          //SET TYPE TO EMAIL????
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"

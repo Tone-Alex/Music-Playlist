@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { useHistory } from 'react-router-dom';
 import { GlobalStoreContext } from '../store'
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -15,6 +16,8 @@ import CloseIcon from '@mui/icons-material/HighlightOff';
 function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
 
+    const history = useHistory();
+
     function handleAddNewSong() {
         store.addNewSong();
     }
@@ -25,6 +28,7 @@ function EditToolbar() {
         store.redo();
     }
     function handleClose() {
+        history.push('/');
         store.closeCurrentList();
     }
     return (

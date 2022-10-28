@@ -287,6 +287,7 @@ function GlobalStoreContextProvider(props) {
         async function asyncLoadIdNamePairs() {
             const response = await api.getPlaylistPairs();
             if (response.data.success) {
+                console.log("ID PAIRS RECEIVED");
                 let pairsArray = response.data.idNamePairs;
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
@@ -323,6 +324,8 @@ function GlobalStoreContextProvider(props) {
             if (response.data.success) {
                 store.loadIdNamePairs();
                 history.push("/");
+            } else {
+                console.log("FAILED TO RECEIVE SUCCESS ");
             }
         }
         processDelete(id);

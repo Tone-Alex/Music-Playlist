@@ -60,7 +60,7 @@ function AuthContextProvider(props) {
         const response = await api.getLoggedIn();
         if (response.status === 200) {
             authReducer({
-                type: AuthActionType.SET_LOGGED_IN,
+                type: AuthActionType.SET_LOGGED_IN,         // SHOULD BE GET LOGGED IN????
                 payload: {
                     loggedIn: response.data.loggedIn,
                     user: response.data.user
@@ -78,7 +78,8 @@ function AuthContextProvider(props) {
                     user: response.data.user
                 }
             })
-            history.push("/login");
+            // history.push("/login");
+            history.push("/");
         }
     }
 
