@@ -15,9 +15,15 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import MUIErrorModal from './MUIErrorModal';
 
 export default function LoginScreen() {
     const { auth } = useContext(AuthContext);
+
+    let modalJSX = "";
+    if (auth.errorMessage) {
+        modalJSX = <MUIErrorModal />
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -102,7 +108,7 @@ export default function LoginScreen() {
                                 </Link>
                             </Grid>
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <Link href="/register/" variant="body2">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>
@@ -111,6 +117,7 @@ export default function LoginScreen() {
                     </Box>
                 </Box>
             </Grid>
+            {modalJSX}
         </Grid>
     );
 }

@@ -12,6 +12,7 @@ import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import MUIErrorModal from './MUIErrorModal';
 
 export default function RegisterScreen() {
     const { auth } = useContext(AuthContext);
@@ -28,6 +29,11 @@ export default function RegisterScreen() {
         );
     };
 
+    let modalJSX = "";
+    if (auth.errorMessage) {
+        modalJSX = <MUIErrorModal />
+    }
+    
     return (
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
@@ -72,6 +78,7 @@ export default function RegisterScreen() {
                                 <TextField
                                     required
                                     fullWidth
+                                    type="email"
                                     id="email"                          //SET TYPE TO EMAIL????
                                     label="Email Address"
                                     name="email"
@@ -119,6 +126,7 @@ export default function RegisterScreen() {
                     </Box>
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
+                {modalJSX}
             </Container>
     );
 }
