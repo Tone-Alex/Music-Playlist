@@ -21,7 +21,6 @@ export default function AppBanner() {
     const isMenuOpen = Boolean(anchorEl);
 
     const handleProfileMenuOpen = (event) => {
-        console.log(event.currentTarget);
         setAnchorEl(event.currentTarget);
     };
 
