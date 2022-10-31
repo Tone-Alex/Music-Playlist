@@ -392,6 +392,12 @@ input {
   float: right;
 }
 
+.modal-button, .song-modal-button {
+  font-size: 20pt;
+  padding: 10px;
+  margin: 5px;
+}
+
 #confirm-cancel-container {
   text-align: center;
 }
