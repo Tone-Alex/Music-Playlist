@@ -105,10 +105,10 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     idNamePairs: store.idNamePairs,
-                    currentList: payload,
+                    currentList: payload.newList,
                     currentSongIndex: -1,
                     currentSong: null,
-                    newListCounter: store.newListCounter + 1,
+                    newListCounter: payload.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
@@ -266,7 +266,24 @@ function GlobalStoreContextProvider(props) {
 
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
-        let newListName = "Untitled" + store.newListCounter;
+
+        // USED TO PROPERLY INCREMENT THE NEW LIST COUNTER BASED ON HOW MANY 'UNTITLED' PLAYLISTS CURRENTLY EXIST
+        let counter = 0;
+        try {
+            const allPlaylists = await api.getPlaylistPairs();
+            if (allPlaylists.status === 200) {
+                allPlaylists.data.idNamePairs.forEach(pair => {
+                    if (pair.name.includes("Untitled")) {
+                        counter += 1;
+                    }
+                });
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        // let newListName = "Untitled" + store.newListCounter;
+        let newListName = "Untitled" + counter;
         const response = await api.createPlaylist(newListName, [], auth.user.email);
         console.log("createNewList response: " + response);
         if (response.status === 201) {
@@ -274,7 +291,7 @@ function GlobalStoreContextProvider(props) {
             let newList = response.data.playlist;
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
-                payload: newList
+                payload: {newList: newList, newListCounter: counter}
             }
             );
 
