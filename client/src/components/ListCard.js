@@ -57,12 +57,27 @@ function ListCard(props) {
     function handleKeyPress(event) {
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
-            store.changeListName(id, text);
+
+            //set the name to the initial name if no changes were made or if input text is empty
+            if (text === "") {
+                store.changeListName(id, idNamePair.name);
+            } else {
+                store.changeListName(id, text);
+            }
             toggleEdit();
         }
     }
     function handleUpdateText(event) {
         setText(event.target.value);
+    }
+
+    function handleBlur(event) {
+        if (text == "") {
+            store.changeListName(idNamePair._id, idNamePair.name);
+        } else {
+            store.changeListName(idNamePair._id, text);
+        }
+        toggleEdit();
     }
 
     let selectClass = "unselected-list-card";
@@ -83,6 +98,7 @@ function ListCard(props) {
             onClick={(event) => {
                 handleLoadList(event, idNamePair._id)
             }}
+            disabled={store.listNameActive}
         >
             <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
             <Box sx={{ p: 1 }}>
@@ -112,6 +128,7 @@ function ListCard(props) {
                 className='list-card'
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
+                onBlur={handleBlur}
                 defaultValue={idNamePair.name}
                 inputProps={{style: {fontSize: 48}}}
                 InputLabelProps={{style: {fontSize: 24}}}
