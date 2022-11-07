@@ -28,10 +28,13 @@ function SongCard(props) {
         event.preventDefault();
         let targetIndex = index;
         let sourceIndex = Number(event.dataTransfer.getData("song"));
-        setDraggedTo(false);
+        if (targetIndex !== sourceIndex) {
+            setDraggedTo(false);
 
-        // UPDATE THE LIST
-        store.addMoveSongTransaction(sourceIndex, targetIndex);
+            // UPDATE THE LIST
+            store.addMoveSongTransaction(sourceIndex, targetIndex);
+        }
+
     }
     function handleRemoveSong(event) {
         store.showRemoveSongModal(index, song);

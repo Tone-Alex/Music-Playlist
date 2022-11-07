@@ -26,8 +26,8 @@ function WorkspaceScreen() {
     return (
         <Box>
         <List 
-            id="playlist-cards" 
-            sx={{ width: '100%', bgcolor: 'transparent' }}
+            id="playlist-workspace" 
+            sx={{ width: '100%', bgcolor: 'transparent'}}
         >
             {
                 store.currentList.songs.map((song, index) => (

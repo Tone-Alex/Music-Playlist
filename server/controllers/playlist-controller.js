@@ -26,23 +26,25 @@ createPlaylist = (req, res) => {
 
     User.findOne({ _id: req.userId }, (err, user) => {
         console.log("user found: " + JSON.stringify(user));
-        user.playlists.push(playlist._id);
-        user
-            .save()
-            .then(() => {
-                playlist
-                    .save()
-                    .then(() => {
-                        return res.status(201).json({
-                            playlist: playlist
+        if (body.ownerEmail === user.email) {
+            user.playlists.push(playlist._id);
+            user
+                .save()
+                .then(() => {
+                    playlist
+                        .save()
+                        .then(() => {
+                            return res.status(201).json({
+                                playlist: playlist
+                            })
                         })
-                    })
-                    .catch(error => {
-                        return res.status(400).json({
-                            errorMessage: 'Playlist Not Created!'
+                        .catch(error => {
+                            return res.status(400).json({
+                                errorMessage: 'Playlist Not Created!'
+                            })
                         })
-                    })
-            });
+                });
+        }
     })
 }
 deletePlaylist = async (req, res) => {
