@@ -13,6 +13,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import logo from '../images/logo.png';
 
 export default function AppBanner() {
     const { auth } = useContext(AuthContext);
@@ -93,9 +94,9 @@ export default function AppBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static" id="playlister-banner">
                 <Toolbar>
-                    <Typography                        
+                    {/* <Typography                        
                         variant="h4"
                         noWrap
                         component="div"
@@ -103,7 +104,10 @@ export default function AppBanner() {
                     >
                         <Link style={{ textDecoration: 'none', color: store.listNameActive ? 'gray' : 'white', 
                         pointerEvents: store.listNameActive ? 'none' : ''}} to='/' onClick={store.closeCurrentList}>⌂</Link>
-                    </Typography>
+                    </Typography> */}
+
+                    <a href="/"><img src={logo} className="logo" alt="logo" /></a>
+                                        
                     <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <IconButton

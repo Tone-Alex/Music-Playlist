@@ -45,7 +45,7 @@ export default function RegisterScreen() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <Avatar sx={{ marginTop: 5, bgcolor: '#bb1919'}}>
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
@@ -78,8 +78,18 @@ export default function RegisterScreen() {
                                 <TextField
                                     required
                                     fullWidth
+                                    id="username"                          
+                                    label="Username"
+                                    name="username"
+                                    autoComplete="username"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
                                     type="email"
-                                    id="email"                          //SET TYPE TO EMAIL????
+                                    id="email"                          
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
