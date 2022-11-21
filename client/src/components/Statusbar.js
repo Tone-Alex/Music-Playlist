@@ -2,6 +2,8 @@ import { useContext } from 'react'
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth';
 import { Typography } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add';
+import Fab from '@mui/material/Fab'
 
 /*
     Our Status bar React component goes at the bottom of our UI.
@@ -21,7 +23,18 @@ function Statusbar() {
         );
     } else {
         return (
-            ""
+            <div id='list-selector-heading'>
+                <Fab 
+                    color="primary" 
+                    aria-label="add"
+                    id="add-list-button"
+                    // onClick={handleCreateNewList}
+                    disabled={store.listNameActive}
+                >
+                    <AddIcon />
+                </Fab>
+                <Typography variant="h2">Your Lists</Typography>
+            </div>
         )
     }
 }

@@ -12,7 +12,6 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import logo from '../images/logo.png';
 
 export default function AppBanner() {
@@ -95,20 +94,10 @@ export default function AppBanner() {
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" id="playlister-banner">
-                <Toolbar>
-                    {/* <Typography                        
-                        variant="h4"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
-                    >
-                        <Link style={{ textDecoration: 'none', color: store.listNameActive ? 'gray' : 'white', 
-                        pointerEvents: store.listNameActive ? 'none' : ''}} to='/' onClick={store.closeCurrentList}>⌂</Link>
-                    </Typography> */}
-
+                <Toolbar sx={{display: 'flex', justifyContent: 'space-between'}}>
                     <a href="/"><img src={logo} className="logo" alt="logo" /></a>
                                         
-                    <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
+                    {/* <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box> */}
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <IconButton
                             size="large"

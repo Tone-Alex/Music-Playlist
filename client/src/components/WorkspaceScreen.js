@@ -1,11 +1,16 @@
 import { useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 import SongCard from './SongCard.js'
+import EditToolbar from './EditToolbar.js'
 import MUIEditSongModal from './MUIEditSongModal'
 import MUIRemoveSongModal from './MUIRemoveSongModal'
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
+import AddIcon from '@mui/icons-material/Add';
 import { GlobalStoreContext } from '../store/index.js'
+import { IconButton } from '@mui/material'
+import Fab from '@mui/material/Fab'
+
 /*
     This React component lets us edit a loaded list, which only
     happens when we are on the proper route.
@@ -39,7 +44,17 @@ function WorkspaceScreen() {
                     />
                 ))  
             }
-         </List>            
+         </List>
+         <div className='add-song-container'>
+            <Fab 
+                color="primary" 
+                aria-label="add song"
+                id="add-song-button"
+            >
+                <AddIcon />
+            </Fab>
+         </div>
+         <EditToolbar />            
          { modalJSX }
          </Box>
     )

@@ -2,10 +2,8 @@ import { useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 import { GlobalStoreContext } from '../store'
 import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
-import CloseIcon from '@mui/icons-material/HighlightOff';
 
 /*
     This toolbar is a functional React component that
@@ -33,34 +31,42 @@ function EditToolbar() {
     }
     return (
         <div id="edit-toolbar">
-            <Button
-                disabled={!store.canAddNewSong()}
-                id='add-song-button'
-                onClick={handleAddNewSong}
-                variant="contained">
-                <AddIcon />
-            </Button>
-            <Button 
-                disabled={!store.canUndo()}
-                id='undo-button'
-                onClick={handleUndo}
-                variant="contained">
-                    <UndoIcon />
-            </Button>
-            <Button 
-                disabled={!store.canRedo()}
-                id='redo-button'
-                onClick={handleRedo}
-                variant="contained">
-                    <RedoIcon />
-            </Button>
-            <Button 
-                disabled={!store.canClose()}
-                id='close-button'
-                onClick={handleClose}
-                variant="contained">
-                    <CloseIcon />
-            </Button>
+            <div className="edit-toolbar-buttons">
+                <Button 
+                    disabled={!store.canUndo()}
+                    id='undo-button'
+                    onClick={handleUndo}
+                    variant="contained">
+                        <UndoIcon />
+                </Button>
+                <Button 
+                    disabled={!store.canRedo()}
+                    id='redo-button'
+                    onClick={handleRedo}
+                    variant="contained">
+                        <RedoIcon />
+                </Button>
+            </div>
+            <div className='edit-toolbar-buttons'>
+                <Button
+                    disabled={!store.canAddNewSong()}
+                    id='publish-playlist-button'
+                    variant="contained">
+                        Publish
+                </Button>
+                <Button
+                    disabled={!store.canAddNewSong()}
+                    id='delete-playlist-button'
+                    variant="contained">
+                        Delete
+                </Button>
+                <Button 
+                    disabled={!store.canClose()}
+                    id='duplicate-playlist-button'
+                    variant="contained">
+                        Duplicate
+                </Button>
+            </div>
         </div>
     )
 }

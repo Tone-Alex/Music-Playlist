@@ -1,11 +1,17 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import Box from '@mui/material/Box';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import ThumbDown from '@mui/icons-material/ThumbDown';
+import ThumbUp from '@mui/icons-material/ThumbUp';
+import KeyboardDoubleArrowDown from '@mui/icons-material/KeyboardDoubleArrowDown';
+import KeyboardDoubleArrowUp from '@mui/icons-material/KeyboardDoubleArrowUp';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
+
+import WorkspaceScreen from './WorkspaceScreen';
+import { Collapse } from '@mui/material';
+import EditToolbar from './EditToolbar';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -19,6 +25,14 @@ function ListCard(props) {
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
     const { idNamePair, selected } = props;
+
+    const [open, setOpen] = useState(false);
+
+    function handleClick(event) {
+        event.stopPropagation();
+        handleLoadList(event, idNamePair._id);
+        setOpen(!open);
+    }
 
     function handleLoadList(event, id) {
         console.log("handleLoadList for " + id);
@@ -93,36 +107,56 @@ function ListCard(props) {
             id={idNamePair._id}
             className={selectClass}
             key={idNamePair._id}
-            sx={{ marginTop: '15px', display: 'flex', p: 1, backgroundColor: '#e1e4cb',
-                "&:hover": {
-                    backgroundColor: 'black',
-                    "& .editIcon": {
-                        color: "white",
-                      },
-                    "& .deleteIcon": {
-                        color: "white"
-                    }
-                }}}
-            style={{ width: '100%', fontSize: '36pt', borderRadius: '25px'}}
+            sx={{ marginTop: '15px', p: 1, backgroundColor: '#e1e4cb'}}
+            style={{ width: '100%', fontSize: '16pt', borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
             button
             onClick={(event) => {
                 handleLoadList(event, idNamePair._id)
             }}
             disabled={store.listNameActive}
         >
-            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton className='editIcon' onClick={handleToggleEdit} aria-label='edit'>
-                    <EditIcon style={{fontSize:'48pt'}} />
-                </IconButton>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton className='deleteIcon' onClick={(event) => {
-                        handleDeleteList(event, idNamePair._id)
-                    }} aria-label='delete'>
-                    <DeleteIcon style={{fontSize:'48pt'}} />
-                </IconButton>
-            </Box>
+            <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                <div>
+                    <Box sx={{ p: 1}}>{idNamePair.name}</Box>
+                    <Box sx={{paddingLeft: 1, fontSize: '12pt'}}>By: Username</Box>
+                </div>
+                <div style={{display: 'flex', paddingRight: '15%'}}>
+                    <Box sx={{ p: 1 }}>
+                        <IconButton className='editIcon' onClick={handleToggleEdit} aria-label='edit'>
+                            <ThumbUp style={{fontSize:'20pt'}} />
+                            200
+                        </IconButton>
+                    </Box>
+                    <Box sx={{ p: 1}}>
+                        <IconButton className='deleteIcon' onClick={(event) => {
+                                handleDeleteList(event, idNamePair._id)
+                            }} aria-label='delete'>
+                            <ThumbDown style={{fontSize:'20pt'}} />
+                            400
+                        </IconButton>
+                    </Box>
+                </div>
+            </div>
+
+            <Collapse in={open && store.currentList !== null} timeout="auto" unmountOnExit
+                sx={{width: '100%', p: 1 }}>
+                <WorkspaceScreen />
+            </Collapse>
+            
+            <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'end'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', width: '73%', fontSize: '12pt'}}>
+                    <Box sx={{ p: 1}}>Published Jan 5 2000</Box>
+                    <Box>Listens 4000</Box>
+                </div>
+                <div>
+                    <Box sx={{ p: 1 }}>
+                        <IconButton className='editIcon' onClick={handleClick} aria-label='edit'>
+                            {open ? <KeyboardDoubleArrowUp style={{fontSize:'24pt'}}/> : <KeyboardDoubleArrowDown style={{fontSize:'24pt'}} />}
+                        </IconButton>
+                    </Box>
+                </div>
+
+            </div>
         </ListItem>
 
     if (editActive) {
