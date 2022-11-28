@@ -13,7 +13,6 @@ import UndoIcon from '@mui/icons-material/Undo';
 */
 function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
-
     const history = useHistory();
 
     function handleAddNewSong() {
@@ -25,10 +24,12 @@ function EditToolbar() {
     function handleRedo() {
         store.redo();
     }
-    function handleClose() {
-        history.push('/');
-        store.closeCurrentList();
+    
+    function handleDeleteList() {
+        store.markListForDeletion(store.currentList._id);
     }
+
+
     return (
         <div id="edit-toolbar">
             <div className="edit-toolbar-buttons">
@@ -49,19 +50,20 @@ function EditToolbar() {
             </div>
             <div className='edit-toolbar-buttons'>
                 <Button
-                    disabled={!store.canAddNewSong()}
+                    disabled={!store.currentList}
                     id='publish-playlist-button'
                     variant="contained">
                         Publish
                 </Button>
                 <Button
-                    disabled={!store.canAddNewSong()}
+                    disabled={!store.currentList}
                     id='delete-playlist-button'
+                    onClick={handleDeleteList}
                     variant="contained">
                         Delete
                 </Button>
                 <Button 
-                    disabled={!store.canClose()}
+                    disabled={!store.currentList}
                     id='duplicate-playlist-button'
                     variant="contained">
                         Duplicate

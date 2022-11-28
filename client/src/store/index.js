@@ -7,6 +7,7 @@ import MoveSong_Transaction from '../transactions/MoveSong_Transaction'
 import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction'
 import UpdateSong_Transaction from '../transactions/UpdateSong_Transaction'
 import AuthContext from '../auth'
+import { fabClasses } from '@mui/material'
 /*
     This is our global data store. Note that it uses the Flux design pattern,
     which makes use of things like actions and reducers. 
@@ -30,6 +31,7 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
+    ERROR_MODAL: "ERROR_MODAL",
     HIDE_MODALS: "HIDE_MODALS"
 }
 
@@ -40,7 +42,8 @@ const CurrentModal = {
     NONE : "NONE",
     DELETE_LIST : "DELETE_LIST",
     EDIT_SONG : "EDIT_SONG",
-    REMOVE_SONG : "REMOVE_SONG"
+    REMOVE_SONG : "REMOVE_SONG",
+    ERROR_MODAL : "ERROR_MODAL"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -104,7 +107,8 @@ function GlobalStoreContextProvider(props) {
             case GlobalStoreActionType.CREATE_NEW_LIST: {                
                 return setStore({
                     currentModal : CurrentModal.NONE,
-                    idNamePairs: store.idNamePairs,
+                    // idNamePairs: store.idNamePairs,
+                    idNamePairs: payload.newIdNamePairs,
                     currentList: payload.newList,
                     currentSongIndex: -1,
                     currentSong: null,
@@ -133,7 +137,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.DELETE_LIST,
                     idNamePairs: store.idNamePairs,
-                    currentList: null,
+                    currentList: store.currentList,
                     currentSongIndex: -1,
                     currentSong: null,
                     newListCounter: store.newListCounter,
@@ -161,11 +165,11 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     idNamePairs: store.idNamePairs,
-                    currentList: payload,
+                    currentList: store.currentList,
                     currentSongIndex: -1,
                     currentSong: null,
                     newListCounter: store.newListCounter,
-                    listNameActive: true,
+                    listNameActive: payload,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
                 });
@@ -197,6 +201,19 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 });
             }
+            case GlobalStoreActionType.ERROR_MODAL: {
+                return setStore({
+                    currentModal : CurrentModal.ERROR_MODAL,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                });
+            }
             case GlobalStoreActionType.HIDE_MODALS: {
                 return setStore({
                     currentModal : CurrentModal.NONE,
@@ -218,7 +235,7 @@ function GlobalStoreContextProvider(props) {
     // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
-
+    
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         // GET THE LIST
@@ -268,6 +285,7 @@ function GlobalStoreContextProvider(props) {
     store.createNewList = async function () {
 
         // USED TO PROPERLY INCREMENT THE NEW LIST COUNTER BASED ON HOW MANY 'UNTITLED' PLAYLISTS CURRENTLY EXIST
+        // RETRIEVE THE PLAYLISTS BY USER!!!!
         let counter = 0;
         try {
             const allPlaylists = await api.getPlaylistPairs();
@@ -284,19 +302,26 @@ function GlobalStoreContextProvider(props) {
 
         // let newListName = "Untitled" + store.newListCounter;
         let newListName = "Untitled" + counter;
-        const response = await api.createPlaylist(newListName, [], auth.user.email);
+        console.log("LIST FOR USERNAME: " + auth.user.username);
+        const response = await api.createPlaylist(newListName, [], auth.user.username, auth.user.email);
         console.log("createNewList response: " + response);
         if (response.status === 201) {
             tps.clearAllTransactions();
             let newList = response.data.playlist;
+            console.log("NEW LIST CREATED: " + JSON.stringify(newList));
+            console.log("ID NAME PAIRS: " + JSON.stringify(store.idNamePairs));
+
+            let newPairs = store.idNamePairs;
+            newPairs.push({_id: newList._id, name: newList.name});
+
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
-                payload: {newList: newList, newListCounter: counter}
+                payload: {newList: newList, newListCounter: counter, newIdNamePairs: newPairs}
             }
             );
 
             // IF IT'S A VALID LIST THEN LET'S START EDITING IT
-            history.push("/playlist/" + newList._id);
+            // history.push("/playlist/" + newList._id);
         }
         else {
             console.log("API FAILED TO CREATE A NEW LIST");
@@ -330,6 +355,7 @@ function GlobalStoreContextProvider(props) {
     // FUNCTIONS ARE markListForDeletion, deleteList, deleteMarkedList,
     // showDeleteListModal, and hideDeleteListModal
     store.markListForDeletion = function (id) {
+        console.log("DELETE ID: " + id);
         async function getListToDelete(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
@@ -545,10 +571,10 @@ function GlobalStoreContextProvider(props) {
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
-    store.setIsListNameEditActive = function () {
+    store.setIsListNameEditActive = function (value) {
         storeReducer({
             type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
-            payload: null
+            payload: value
         });
     }
 

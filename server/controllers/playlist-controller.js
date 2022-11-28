@@ -40,7 +40,9 @@ createPlaylist = (req, res) => {
                         })
                         .catch(error => {
                             return res.status(400).json({
-                                errorMessage: 'Playlist Not Created!'
+                                playlist: playlist,
+                                errorMessage: 'Playlist Not Created!',
+                                message: error
                             })
                         })
                 });
@@ -107,6 +109,12 @@ getPlaylistById = async (req, res) => {
         asyncFindUser(list);
     }).catch(err => console.log(err))
 }
+
+getPlaylistsByUser = async (req, res) => {
+    console.log("Find Playlist with username: " + JSON.stringify(req.params.user));
+
+}
+
 getPlaylistPairs = async (req, res) => {
     console.log("getPlaylistPairs");
     await User.findOne({ _id: req.userId }, (err, user) => {

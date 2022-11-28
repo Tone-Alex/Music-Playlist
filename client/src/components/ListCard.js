@@ -11,10 +11,9 @@ import TextField from '@mui/material/TextField';
 
 import WorkspaceScreen from './WorkspaceScreen';
 import { Collapse } from '@mui/material';
-import EditToolbar from './EditToolbar';
 
 /*
-    This is a card in our list of top 5 lists. It lets select
+    This is a card in our list of lists. It lets select
     a list for editing and it has controls for changing its 
     name or deleting it.
     
@@ -26,11 +25,16 @@ function ListCard(props) {
     const [text, setText] = useState("");
     const { idNamePair, selected } = props;
 
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(store.currentList && store.currentList._id === idNamePair._id);
 
-    function handleClick(event) {
+    function handleArrowClick(event) {
         event.stopPropagation();
-        handleLoadList(event, idNamePair._id);
+        if (!open) {
+            handleLoadList(event, idNamePair._id);
+        } else {
+            store.closeCurrentList();
+        }
+
         setOpen(!open);
     }
 
@@ -48,6 +52,13 @@ function ListCard(props) {
         }
     }
 
+    //checks for double click to start editing name of playlist
+    function handleClick(event) {
+        if (!store.currentList && event.detail === 2) {
+            handleToggleEdit(event);
+        }
+    }
+
     function handleToggleEdit(event) {
         event.stopPropagation();
         toggleEdit();
@@ -56,7 +67,9 @@ function ListCard(props) {
     function toggleEdit() {
         let newActive = !editActive;
         if (newActive) {
-            store.setIsListNameEditActive();
+            store.setIsListNameEditActive(true);            
+        } else {
+            store.setIsListNameEditActive(false);
         }
         setEditActive(newActive);
     }
@@ -74,7 +87,7 @@ function ListCard(props) {
 
             //set the name to the initial name if no changes were made or if input text is empty
             if (text === "") {
-                store.changeListName(id, idNamePair.name);
+                store.changeListName(id, idNamePair.name);                
             } else {
                 store.changeListName(id, text);
             }
@@ -110,10 +123,8 @@ function ListCard(props) {
             sx={{ marginTop: '15px', p: 1, backgroundColor: '#e1e4cb'}}
             style={{ width: '100%', fontSize: '16pt', borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
             button
-            onClick={(event) => {
-                handleLoadList(event, idNamePair._id)
-            }}
-            disabled={store.listNameActive}
+            onClick={handleClick}
+            // disabled={store.listNameActive}
         >
             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
                 <div>
@@ -122,7 +133,7 @@ function ListCard(props) {
                 </div>
                 <div style={{display: 'flex', paddingRight: '15%'}}>
                     <Box sx={{ p: 1 }}>
-                        <IconButton className='editIcon' onClick={handleToggleEdit} aria-label='edit'>
+                        <IconButton className='editIcon' aria-label='edit'>
                             <ThumbUp style={{fontSize:'20pt'}} />
                             200
                         </IconButton>
@@ -138,7 +149,7 @@ function ListCard(props) {
                 </div>
             </div>
 
-            <Collapse in={open && store.currentList !== null} timeout="auto" unmountOnExit
+            <Collapse in={open} timeout="auto" unmountOnExit
                 sx={{width: '100%', p: 1 }}>
                 <WorkspaceScreen />
             </Collapse>
@@ -150,7 +161,7 @@ function ListCard(props) {
                 </div>
                 <div>
                     <Box sx={{ p: 1 }}>
-                        <IconButton className='editIcon' onClick={handleClick} aria-label='edit'>
+                        <IconButton className='editIcon' onClick={handleArrowClick} aria-label='edit'>
                             {open ? <KeyboardDoubleArrowUp style={{fontSize:'24pt'}}/> : <KeyboardDoubleArrowDown style={{fontSize:'24pt'}} />}
                         </IconButton>
                     </Box>

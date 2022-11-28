@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth';
 import { Typography } from '@mui/material'
@@ -13,6 +13,15 @@ import Fab from '@mui/material/Fab'
 function Statusbar() {
     const { store } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
+
+    useEffect(() => {
+        store.loadIdNamePairs();
+    }, []);
+
+    function handleCreateNewList() {
+        store.createNewList();
+    }
+
     let text ="";
     if (store.currentList && auth.loggedIn) {
         text = store.currentList.name;
@@ -28,7 +37,7 @@ function Statusbar() {
                     color="primary" 
                     aria-label="add"
                     id="add-list-button"
-                    // onClick={handleCreateNewList}
+                    onClick={handleCreateNewList}
                     disabled={store.listNameActive}
                 >
                     <AddIcon />

@@ -20,6 +20,10 @@ import Fab from '@mui/material/Fab'
 function WorkspaceScreen() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
+
+    function handleAddNewSong() {
+        store.addNewSong();
+    }
     
     let modalJSX = "";
     if (store.isEditSongModalOpen()) {
@@ -28,28 +32,37 @@ function WorkspaceScreen() {
     else if (store.isRemoveSongModalOpen()) {
         modalJSX = <MUIRemoveSongModal />;
     }
+
+    let songCard = "";
+    if (store.currentList) {
+        songCard =
+            <List 
+                id="playlist-workspace" 
+                sx={{ width: '100%', bgcolor: 'transparent'}}
+            >
+                {
+                    store.currentList.songs.map((song, index) => (
+                        <SongCard
+                            id={'playlist-song-' + (index)}
+                            key={'playlist-song-' + (index)}
+                            index={index}
+                            song={song}
+                        />
+                    ))  
+                }
+            </List> 
+    }
+
+
     return (
         <Box>
-        <List 
-            id="playlist-workspace" 
-            sx={{ width: '100%', bgcolor: 'transparent'}}
-        >
-            {
-                store.currentList.songs.map((song, index) => (
-                    <SongCard
-                        id={'playlist-song-' + (index)}
-                        key={'playlist-song-' + (index)}
-                        index={index}
-                        song={song}
-                    />
-                ))  
-            }
-         </List>
+         {songCard}
          <div className='add-song-container'>
             <Fab 
                 color="primary" 
                 aria-label="add song"
                 id="add-song-button"
+                onClick={handleAddNewSong}
             >
                 <AddIcon />
             </Fab>

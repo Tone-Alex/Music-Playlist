@@ -53,7 +53,7 @@ function AuthContextProvider(props) {
             case AuthActionType.REGISTER_USER: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: true,
+                    loggedIn: false,
                     errorMessage: ""
                 })
             }
@@ -83,9 +83,9 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.registerUser = async function(firstName, lastName, email, password, passwordVerify) {
+    auth.registerUser = async function(firstName, lastName, username, email, password, passwordVerify) {
         try {
-            const response = await api.registerUser(firstName, lastName, email, password, passwordVerify);      
+            const response = await api.registerUser(firstName, lastName, username, email, password, passwordVerify);      
             if (response.status === 200) {
                 authReducer({
                     type: AuthActionType.REGISTER_USER,
@@ -93,8 +93,8 @@ function AuthContextProvider(props) {
                         user: response.data.user
                     }
                 })
-                // history.push("/login");
-                history.push("/");
+                history.push("/login");
+                // history.push("/");
             }
         } catch (error) {
             console.log("REGISTER UNSUCCESSFUL: " + error.response.data.errorMessage);

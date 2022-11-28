@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab'
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography'
+import MUIErrorPopup from './MUIErrorPopup';
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -19,9 +20,6 @@ const HomeScreen = () => {
         store.loadIdNamePairs();
     }, []);
 
-    function handleCreateNewList() {
-        store.createNewList();
-    }
     let listCard = "";
     if (store) {
         listCard = 
@@ -39,23 +37,12 @@ const HomeScreen = () => {
     }
     return (
         <div id="playlist-selector">
-            {/* <div id="list-selector-heading">
-            <Fab 
-                color="primary" 
-                aria-label="add"
-                id="add-list-button"
-                onClick={handleCreateNewList}
-                disabled={store.listNameActive}
-            >
-                <AddIcon />
-            </Fab>
-                <Typography variant="h2">Your Lists</Typography>
-            </div> */}
             <div id="list-selector-list">
                 {
                     listCard
                 }
                 <MUIDeleteModal />
+                <MUIErrorPopup />
             </div>
         </div>)
 }

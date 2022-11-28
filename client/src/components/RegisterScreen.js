@@ -23,6 +23,7 @@ export default function RegisterScreen() {
         auth.registerUser(
             formData.get('firstName'),
             formData.get('lastName'),
+            formData.get('username'),
             formData.get('email'),
             formData.get('password'),
             formData.get('passwordVerify')
