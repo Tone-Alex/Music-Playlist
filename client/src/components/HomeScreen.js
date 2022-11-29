@@ -16,8 +16,11 @@ import MUIErrorPopup from './MUIErrorPopup';
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
 
+    // useEffect(() => {
+    //     store.loadIdNamePairs();
+    // }, []);
     useEffect(() => {
-        store.loadIdNamePairs();
+        store.loadAllPlaylists();
     }, []);
 
     let listCard = "";
@@ -25,10 +28,17 @@ const HomeScreen = () => {
         listCard = 
             <List sx={{ width: '90%', left: '5%' }}>
             {
-                store.idNamePairs.map((pair) => (
+                // store.idNamePairs.map((pair) => (
+                //     <ListCard
+                //         key={pair._id}
+                //         idNamePair={pair}
+                //         selected={false}
+                //     />
+                // ))
+                store.currentPlaylists.map((playlist) => (
                     <ListCard
-                        key={pair._id}
-                        idNamePair={pair}
+                        key={playlist._id}
+                        playlist={playlist}
                         selected={false}
                     />
                 ))

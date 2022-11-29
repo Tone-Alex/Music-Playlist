@@ -14,9 +14,12 @@ function Statusbar() {
     const { store } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
 
-    useEffect(() => {
-        store.loadIdNamePairs();
-    }, []);
+    // useEffect(() => {
+    //     store.loadIdNamePairs();
+    // }, []);
+    // useEffect(() => {
+    //     store.loadAllPlaylists();
+    // }, []);
 
     function handleCreateNewList() {
         store.createNewList();

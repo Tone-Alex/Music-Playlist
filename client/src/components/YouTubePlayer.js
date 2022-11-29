@@ -1,4 +1,7 @@
 
+import { useContext, useState } from 'react'
+import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth';
 import { AppBar, Toolbar } from '@mui/material';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -15,15 +18,26 @@ export default function YouTubePlayer() {
     // DEMONSTRATES HOW TO IMPLEMENT A PLAYLIST THAT MOVES
     // FROM ONE SONG TO THE NEXT
 
+    const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
+
+    const [player, setPlayer] = useState();
+
     // THIS HAS THE YOUTUBE IDS FOR THE SONGS IN OUR PLAYLIST
-    let playlist = [
-        "mqmxkGjow1A",
-        "8RbXIMZmVv8",
-        "8UbNbor3OqQ"
-    ];
+    let playlist = [];
+    let currentPlayingPlaylist = store.currentPlayingPlaylist;
+    if (currentPlayingPlaylist) {
+        playlist = currentPlayingPlaylist.songs.map((song) => (
+            song.youTubeId
+        ))
+    }
 
     // THIS IS THE INDEX OF THE SONG CURRENTLY IN USE IN THE PLAYLIST
     let currentSong = 0;
+    let currentPlayingSong = null;
+    if (currentPlayingPlaylist) {
+        currentPlayingSong = currentPlayingPlaylist.songs[currentSong];
+    }
 
     const playerOptions = {
         height: '300',
@@ -37,6 +51,7 @@ export default function YouTubePlayer() {
     // THIS FUNCTION LOADS THE CURRENT SONG INTO
     // THE PLAYER AND PLAYS IT
     function loadAndPlayCurrentSong(player) {
+        setPlayer(player);
         let song = playlist[currentSong];
         player.loadVideoById(song);
         player.playVideo();
@@ -48,7 +63,13 @@ export default function YouTubePlayer() {
         currentSong = currentSong % playlist.length;
     }
 
+    function decSong() {
+        currentSong--;
+        currentSong = currentSong % playlist.length;
+    }
+
     function onPlayerReady(event) {
+        setPlayer(event.target);
         loadAndPlayCurrentSong(event.target);
         event.target.playVideo();
     }
@@ -83,19 +104,31 @@ export default function YouTubePlayer() {
         }
     }
 
+    function handleFastRewind() {
+        decSong();
+        loadAndPlayCurrentSong(player);
+    }
+
+    function handleFastForward() {
+        incSong();
+        loadAndPlayCurrentSong(player);
+    }
+
     return (
         <div>
             <YouTube
             videoId={playlist[currentSong]}
             opts={playerOptions}
             onReady={onPlayerReady}
-            onStateChange={onPlayerStateChange} />
+            onStateChange={onPlayerStateChange} 
+            />
 
             <div id="playing-song-container">
-                <p>Playlist: Pink Floyd</p>
-                <p>Song #: 2</p>
-                <p>Title: Pink Floyd</p>
-                <p>Artist: Pink Floyd</p>
+                <h4 style={{textAlign: 'center', padding: 0, margin: 0}}>Now Playing</h4>
+                <p>Playlist: {currentPlayingPlaylist ? currentPlayingPlaylist.name : ""}</p> 
+                <p>Song #: {currentPlayingSong ? currentSong + 1 : ""}</p>
+                <p>Title: {currentPlayingSong ? currentPlayingSong.title : ""}</p>
+                <p>Artist: {currentPlayingSong ? currentPlayingSong.artist : "" }</p>
 
                 <div>
                     <AppBar position='static' id="play-song-options">
@@ -105,6 +138,7 @@ export default function YouTubePlayer() {
                                     aria-label="Logged-in user Playlists"
                                     aria-haspopup="true"
                                     color="inherit"
+                                    onClick={handleFastRewind}
                                 >
                                     <FastRewind fontSize='large' />
                                 </IconButton>
@@ -114,6 +148,7 @@ export default function YouTubePlayer() {
                                     aria-label="Logged-in user Playlists"
                                     aria-haspopup="true"
                                     color="inherit"
+                                    onClick={() => player.pauseVideo()}
                                 >
                                     <Stop fontSize='large' />
                                 </IconButton>
@@ -123,6 +158,7 @@ export default function YouTubePlayer() {
                                     aria-label="Logged-in user Playlists"
                                     aria-haspopup="true"
                                     color="inherit"
+                                    onClick={() => player.playVideo()}
                                 >
                                     <PlayArrow fontSize='large' />
                                 </IconButton>
@@ -132,6 +168,7 @@ export default function YouTubePlayer() {
                                     aria-label="Logged-in user Playlists"
                                     aria-haspopup="true"
                                     color="inherit"
+                                    onClick={handleFastForward}
                                 >
                                     <FastForward fontSize='large' />
                                 </IconButton>

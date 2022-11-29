@@ -23,14 +23,14 @@ function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
-    const { idNamePair, selected } = props;
+    const { playlist, selected } = props;
 
-    const [open, setOpen] = useState(store.currentList && store.currentList._id === idNamePair._id);
+    const [open, setOpen] = useState(store.currentList && store.currentList._id === playlist._id);
 
     function handleArrowClick(event) {
         event.stopPropagation();
         if (!open) {
-            handleLoadList(event, idNamePair._id);
+            handleLoadList(event, playlist._id);
         } else {
             store.closeCurrentList();
         }
@@ -56,6 +56,9 @@ function ListCard(props) {
     function handleClick(event) {
         if (!store.currentList && event.detail === 2) {
             handleToggleEdit(event);
+        } else {
+            // event.stopPropagation(true);
+            store.setCurrentPlayingPlaylist(playlist._id);
         }
     }
 
@@ -87,7 +90,7 @@ function ListCard(props) {
 
             //set the name to the initial name if no changes were made or if input text is empty
             if (text === "") {
-                store.changeListName(id, idNamePair.name);                
+                store.changeListName(id, playlist.name);                
             } else {
                 store.changeListName(id, text);
             }
@@ -100,9 +103,9 @@ function ListCard(props) {
 
     function handleBlur(event) {
         if (text == "") {
-            store.changeListName(idNamePair._id, idNamePair.name);
+            store.changeListName(playlist._id, playlist.name);
         } else {
-            store.changeListName(idNamePair._id, text);
+            store.changeListName(playlist._id, text);
         }
         toggleEdit();
     }
@@ -117,9 +120,9 @@ function ListCard(props) {
     }
     let cardElement =
         <ListItem
-            id={idNamePair._id}
+            id={playlist._id}
             className={selectClass}
-            key={idNamePair._id}
+            key={playlist._id}
             sx={{ marginTop: '15px', p: 1, backgroundColor: '#e1e4cb'}}
             style={{ width: '100%', fontSize: '16pt', borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
             button
@@ -128,22 +131,22 @@ function ListCard(props) {
         >
             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
                 <div>
-                    <Box sx={{ p: 1}}>{idNamePair.name}</Box>
-                    <Box sx={{paddingLeft: 1, fontSize: '12pt'}}>By: Username</Box>
+                    <Box sx={{ p: 1}}>{playlist.name}</Box>
+                    <Box sx={{paddingLeft: 1, fontSize: '12pt'}}>By: {playlist.username}</Box>
                 </div>
                 <div style={{display: 'flex', paddingRight: '15%'}}>
                     <Box sx={{ p: 1 }}>
                         <IconButton className='editIcon' aria-label='edit'>
                             <ThumbUp style={{fontSize:'20pt'}} />
-                            200
+                            {playlist.likes}
                         </IconButton>
                     </Box>
                     <Box sx={{ p: 1}}>
                         <IconButton className='deleteIcon' onClick={(event) => {
-                                handleDeleteList(event, idNamePair._id)
+                                handleDeleteList(event, playlist._id)
                             }} aria-label='delete'>
                             <ThumbDown style={{fontSize:'20pt'}} />
-                            400
+                            {playlist.dislikes}
                         </IconButton>
                     </Box>
                 </div>
@@ -156,8 +159,8 @@ function ListCard(props) {
             
             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'end'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '73%', fontSize: '12pt'}}>
-                    <Box sx={{ p: 1}}>Published Jan 5 2000</Box>
-                    <Box>Listens 4000</Box>
+                    <Box sx={{ p: 1}}>Published {new Date(playlist.publishedDate).getFullYear()}</Box>
+                    <Box>Listens {playlist.listens}</Box>
                 </div>
                 <div>
                     <Box sx={{ p: 1 }}>
@@ -176,7 +179,7 @@ function ListCard(props) {
                 margin="normal"
                 required
                 fullWidth
-                id={"list-" + idNamePair._id}
+                id={"list-" + playlist._id}
                 label="Playlist Name"
                 name="name"
                 autoComplete="Playlist Name"
@@ -184,7 +187,7 @@ function ListCard(props) {
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
                 onBlur={handleBlur}
-                defaultValue={idNamePair.name}
+                defaultValue={playlist.name}
                 inputProps={{style: {fontSize: 48}}}
                 InputLabelProps={{style: {fontSize: 24}}}
                 autoFocus

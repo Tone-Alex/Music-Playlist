@@ -12,9 +12,10 @@ const auth = require('../auth')
 router.post('/playlist', auth.verify, PlaylistController.createPlaylist)
 router.delete('/playlist/:id', auth.verify, PlaylistController.deletePlaylist)
 router.get('/playlist/:id', auth.verify, PlaylistController.getPlaylistById)
-// router.get('/playlist/:user', PlaylistController.getPlaylistsByUser);
+router.get('/playlist/user/:user', PlaylistController.getPlaylistsByUser);   //no verification needed
 router.get('/playlistpairs', auth.verify, PlaylistController.getPlaylistPairs)
 router.get('/playlists', auth.verify, PlaylistController.getPlaylists)
 router.put('/playlist/:id', auth.verify, PlaylistController.updatePlaylist)
+router.put('/playlist/user/:user', PlaylistController.updatePlaylistByUser);
 
 module.exports = router

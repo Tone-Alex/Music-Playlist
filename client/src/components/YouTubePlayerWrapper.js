@@ -1,13 +1,14 @@
-
+import { useContext, useState } from 'react';
+import GlobalStoreContext from "../store";
 import YouTubePlayer from "./YouTubePlayer";
+import PlaylistComments from "./PlaylistComments";
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import {useState} from "react";
 
 export default function YouTubePlayerWrapper() {
 
+  const { store } = useContext(GlobalStoreContext);
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -30,7 +31,7 @@ export default function YouTubePlayerWrapper() {
                     )}
                     {value === 1 && (
                     <Box>
-                        <Typography>COMMENTS SECTION</Typography>
+                        <PlaylistComments />
                     </Box>
                     )}
                 </Box>

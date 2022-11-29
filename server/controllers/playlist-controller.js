@@ -112,6 +112,29 @@ getPlaylistById = async (req, res) => {
 
 getPlaylistsByUser = async (req, res) => {
     console.log("Find Playlist with username: " + JSON.stringify(req.params.user));
+    await User.findOne({ username: req.params.user }, (err, user) => {
+        console.log("find user with id " + req.userId);
+        async function asyncFindList(email) {
+            console.log("find all Playlists owned by " + email);
+            await Playlist.find({ ownerEmail: email }, (err, playlists) => {
+                console.log("found Playlists: " + JSON.stringify(playlists));
+                if (err) {
+                    return res.status(400).json({ success: false, error: err })
+                }
+                if (!playlists) {
+                    console.log("!playlists.length");
+                    return res
+                        .status(404)
+                        .json({ success: false, error: 'Playlists not found' })
+                }
+                else {
+                    return res.status(200).json({ success: true, playlists: playlists })
+                }
+            }).catch(err => console.log(err))
+        }
+        asyncFindList(user.email);
+
+    }).catch(err => console.log(err))
 
 }
 
@@ -152,6 +175,11 @@ getPlaylistPairs = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getPlaylists = async (req, res) => {
+    // if(auth.verifyUser(req) === null){
+    //     return res.status(400).json({
+    //         errorMessage: 'UNAUTHORIZED'
+    //     })
+    // }
     await Playlist.find({}, (err, playlists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
@@ -161,7 +189,7 @@ getPlaylists = async (req, res) => {
                 .status(404)
                 .json({ success: false, error: `Playlists not found` })
         }
-        return res.status(200).json({ success: true, data: playlists })
+        return res.status(200).json({ success: true, playlists: playlists })
     }).catch(err => console.log(err))
 }
 updatePlaylist = async (req, res) => {
@@ -223,11 +251,60 @@ updatePlaylist = async (req, res) => {
         asyncFindUser(playlist);
     })
 }
+
+updatePlaylistByUser = async (req, res) => {
+    const body = req.body;
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to update',
+        })
+    }
+
+    Playlist.findOne({ username: req.params.user }, (err, playlist) => {
+        console.log("playlist found: " + JSON.stringify(playlist));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Playlist not found!',
+            })
+        }
+        playlist.name = body.playlist.name;
+        playlist.songs = body.playlist.songs;
+        playlist.likes = body.playlist.likes;
+        playlist.dislikes = body.playlist.dislikes;
+        playlist.listens = body.playlist.listens;
+        playlist.comments = body.playlist.comments;
+        playlist.published = body.playlist.published;
+        playlist.publishedDate = body.playlist.publishedDate;
+        playlist
+            .save()
+            .then(() => {
+                console.log("UPDATE SUCESS");
+                return res.status(200).json({
+                    success: true,
+                    id: playlist._id,
+                    message: "Playlist updated"
+                })
+            })
+            .catch(error => {
+                console.log("FAILURE: " + JSON.stringify(error));
+                return res.status(404).json({
+                    error,
+                    message: 'Playlist not updated!'
+                })
+            })
+    })
+
+}
+
 module.exports = {
     createPlaylist,
     deletePlaylist,
     getPlaylistById,
     getPlaylistPairs,
     getPlaylists,
-    updatePlaylist
+    getPlaylistsByUser,
+    updatePlaylist,
+    updatePlaylistByUser
 }
