@@ -23,7 +23,7 @@ function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
-    const { playlist, selected } = props;
+    const { playlist, selected, published } = props;
 
     const [open, setOpen] = useState(store.currentList && store.currentList._id === playlist._id);
 
@@ -69,11 +69,6 @@ function ListCard(props) {
 
     function toggleEdit() {
         let newActive = !editActive;
-        if (newActive) {
-            store.setIsListNameEditActive(true);            
-        } else {
-            store.setIsListNameEditActive(false);
-        }
         setEditActive(newActive);
     }
 
@@ -84,7 +79,7 @@ function ListCard(props) {
         store.markListForDeletion(id);
     }
 
-    function handleKeyPress(event) {
+    async function handleKeyPress(event) {
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
 
@@ -92,8 +87,15 @@ function ListCard(props) {
             if (text === "") {
                 store.changeListName(id, playlist.name);                
             } else {
-                store.changeListName(id, text);
+                let verified = await store.verifyName(text);
+                if (verified) {
+                    store.changeListName(id, text);
+                } else {
+                    store.showNameErrorModal();
+                }
             }
+
+            setText("");
             toggleEdit();
         }
     }
@@ -101,12 +103,19 @@ function ListCard(props) {
         setText(event.target.value);
     }
 
-    function handleBlur(event) {
-        if (text == "") {
+    async function handleBlur(event) {
+        if (text === "") {
             store.changeListName(playlist._id, playlist.name);
         } else {
-            store.changeListName(playlist._id, text);
+            let verified = await store.verifyName(text);
+            console.log("NAME VERIFIED IN BLUR: " + verified);
+            if (verified) {
+                store.changeListName(playlist._id, text);
+            } else {
+                store.showNameErrorModal();
+            }
         }
+        setText("");
         toggleEdit();
     }
 
@@ -114,6 +123,11 @@ function ListCard(props) {
     if (selected) {
         selectClass = "selected-list-card";
     }
+    let publishedClass = "";
+    if (published) {
+        publishedClass = "published-list-card"
+    }
+
     let cardStatus = false;
     if (store.isListNameEditActive) {
         cardStatus = true;
@@ -121,9 +135,10 @@ function ListCard(props) {
     let cardElement =
         <ListItem
             id={playlist._id}
-            className={selectClass}
+            className={selectClass + " " + publishedClass}
             key={playlist._id}
-            sx={{ marginTop: '15px', p: 1, backgroundColor: '#e1e4cb'}}
+            // sx={{ marginTop: '15px', p: 1, backgroundColor: '#e1e4cb'}}
+            sx={{ marginTop: '15px', p: 1}}
             style={{ width: '100%', fontSize: '16pt', borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
             button
             onClick={handleClick}
@@ -135,16 +150,16 @@ function ListCard(props) {
                     <Box sx={{paddingLeft: 1, fontSize: '12pt'}}>By: {playlist.username}</Box>
                 </div>
                 <div style={{display: 'flex', paddingRight: '15%'}}>
-                    <Box sx={{ p: 1 }}>
-                        <IconButton className='editIcon' aria-label='edit'>
+                    <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
+                        <IconButton className='likeIcon' aria-label='like'>
                             <ThumbUp style={{fontSize:'20pt'}} />
                             {playlist.likes}
                         </IconButton>
                     </Box>
-                    <Box sx={{ p: 1}}>
-                        <IconButton className='deleteIcon' onClick={(event) => {
+                    <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
+                        <IconButton className='dislikeIcon' onClick={(event) => {
                                 handleDeleteList(event, playlist._id)
-                            }} aria-label='delete'>
+                            }} aria-label='dislike'>
                             <ThumbDown style={{fontSize:'20pt'}} />
                             {playlist.dislikes}
                         </IconButton>
@@ -159,8 +174,9 @@ function ListCard(props) {
             
             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'end'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '73%', fontSize: '12pt'}}>
-                    <Box sx={{ p: 1}}>Published {new Date(playlist.publishedDate).getFullYear()}</Box>
-                    <Box>Listens {playlist.listens}</Box>
+                    <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
+                        Published {new Date(playlist.publishedDate).getFullYear()}</Box>
+                    <Box sx={{visibility: playlist.published ? "visible" : "hidden"}}>Listens {playlist.listens}</Box>
                 </div>
                 <div>
                     <Box sx={{ p: 1 }}>

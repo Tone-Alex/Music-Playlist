@@ -59,6 +59,7 @@ function WorkspaceScreen() {
          {songCard}
          <div className='add-song-container'>
             <Fab 
+                sx={{visibility: store.currentList && !store.currentList.published ? "visible" : "hidden"}}
                 color="primary" 
                 aria-label="add song"
                 id="add-song-button"

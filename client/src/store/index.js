@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory} from 'react-router-dom'
 import jsTPS from '../common/jsTPS'
 import api from './store-request-api'
 import CreateSong_Transaction from '../transactions/CreateSong_Transaction'
@@ -25,6 +25,7 @@ export const GlobalStoreActionType = {
     CHANGE_LIST_NAME: "CHANGE_LIST_NAME",
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
+    DUPLICATE_LIST: "DUPLICATE_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
@@ -128,6 +129,21 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 })
             }
+            case GlobalStoreActionType.DUPLICATE_LIST: {                
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentPlaylists: payload.newCurrentPlaylists,
+                    currentList: store.currentList,
+                    currentPlayingPlaylist: store.currentPlayingPlaylist,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                })
+            }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
                 return setStore({
@@ -150,7 +166,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     idNamePairs: store.idNamePairs,
                     currentPlaylists: payload,
-                    currentList: null,
+                    currentList: store.currentList,
                     currentPlayingPlaylist: null,
                     currentSongIndex: -1,
                     currentSong: null,
@@ -183,7 +199,7 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: store.idNamePairs,
                     currentPlaylists: store.currentPlaylists,
                     currentList: store.currentList,
-                    currentPlayingPlaylist: null,
+                    currentPlayingPlaylist: store.currentPlayingPlaylist,
                     currentSongIndex: -1,
                     currentSong: null,
                     newListCounter: store.newListCounter,
@@ -265,7 +281,7 @@ function GlobalStoreContextProvider(props) {
                     currentSongIndex: store.currentSongIndex,
                     currentSong: store.currentSong,
                     newListCounter: store.newListCounter,
-                    listNameActive: false,
+                    listNameActive: true,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
                 });
@@ -293,6 +309,20 @@ function GlobalStoreContextProvider(props) {
     // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
+    store.verifyName = async function (newName) {
+        let response = await api.getPlaylistPairs();
+        if (response.data.success) {
+            let playlistPairs = response.data.idNamePairs;
+            let samePlaylistNames = playlistPairs.filter((pair) => {
+                return pair.name === newName
+            });
+            if (samePlaylistNames.length > 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
 
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
@@ -349,7 +379,7 @@ function GlobalStoreContextProvider(props) {
             const allPlaylists = await api.getPlaylistPairs();
             if (allPlaylists.status === 200) {
                 allPlaylists.data.idNamePairs.forEach(pair => {
-                    if (pair.name.includes("Untitled")) {
+                    if (pair.name.startsWith("Untitled")) {
                         counter += 1;
                     }
                 });
@@ -358,8 +388,15 @@ function GlobalStoreContextProvider(props) {
             console.log(err);
         }
 
-        // let newListName = "Untitled" + store.newListCounter;
+        //verify the new list name
         let newListName = "Untitled" + counter;
+        let nameVerified = await store.verifyName(newListName);
+        while (!nameVerified) {
+            counter += 1;
+            newListName = "Untitled" + counter;
+            nameVerified = await store.verifyName(newListName);
+        }
+
         console.log("LIST FOR USERNAME: " + auth.user.username);
         const response = await api.createPlaylist(newListName, [], auth.user.username, auth.user.email);
         console.log("createNewList response: " + response);
@@ -467,9 +504,67 @@ function GlobalStoreContextProvider(props) {
         store.deleteList(store.listIdMarkedForDeletion);
         store.hideModals();
     }
+
+    store.publishPlaylist = function (id) {        
+        async function asyncPublishPlaylist() {
+            let list = store.currentList;
+            list.published = true;
+            list.publishedDate = new Date();
+            let response = await api.updatePlaylistById(store.currentList._id, list);
+            if (response.data.success) {
+                store.loadAllPlaylists();
+            }
+        }
+        asyncPublishPlaylist();
+
+    }
+
+    store.duplicatePlaylist = function (id) {
+        async function asyncDuplicatePlaylist() {
+            // to find the right playlist, find the playlist by username, then update it
+            let response = await api.getPlaylistsByUser(store.currentList.username);
+            if (response.data.success) {
+                let playlistArray = response.data.playlists;
+                let playlist = playlistArray.find(list => list._id === id);
+                if (playlist) {
+                    let newPlaylistName = playlist.name;
+                    let nameVerified = await store.verifyName(newPlaylistName);
+                    let counter = 0;
+                    while (!nameVerified) {
+                        counter += 1;
+                        newPlaylistName = playlist.name + '(' + counter + ')';          
+                        nameVerified = await store.verifyName(newPlaylistName);
+                    }
+
+                    response = await api.createPlaylist(newPlaylistName, playlist.songs, auth.user.username, auth.user.email);
+                    if (response.status === 201) {
+                        tps.clearAllTransactions();
+                        let newList = response.data.playlist;
+
+                        let newPlaylists = store.currentPlaylists;
+                        newPlaylists.push(newList);
+                        //NEED TO CHANGE THIS BY SORTING BASED ON CURRENT SORT METHOD
+                        newPlaylists.sort((first, second) => {
+                            return first.name.localeCompare(second.name);
+                        });
+                        storeReducer({
+                            type: GlobalStoreActionType.DUPLICATE_LIST,
+                            payload: {newCurrentPlaylists: newPlaylists}
+                        }
+                        );
+                    }
+                    else {
+                        console.log("API FAILED TO CREATE A NEW LIST");
+                    }
+                }
+            }
+        }
+        asyncDuplicatePlaylist();
+
+    }
+
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
     // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
-
     store.showEditSongModal = (songIndex, songToEdit) => {
         storeReducer({
             type: GlobalStoreActionType.EDIT_SONG,
@@ -482,6 +577,14 @@ function GlobalStoreContextProvider(props) {
             payload: {currentSongIndex: songIndex, currentSong: songToRemove}
         });        
     }
+
+    store.showNameErrorModal = function() {
+        storeReducer({
+            type: GlobalStoreActionType.ERROR_MODAL,
+            payload: {}
+        });
+    }
+
     store.hideModals = () => {
         storeReducer({
             type: GlobalStoreActionType.HIDE_MODALS,

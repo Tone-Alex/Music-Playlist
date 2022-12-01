@@ -120,7 +120,7 @@ export default function YouTubePlayer() {
             videoId={playlist[currentSong]}
             opts={playerOptions}
             onReady={onPlayerReady}
-            onStateChange={onPlayerStateChange} 
+            onStateChange={onPlayerStateChange}
             />
 
             <div id="playing-song-container">

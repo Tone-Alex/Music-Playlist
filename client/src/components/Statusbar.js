@@ -17,9 +17,9 @@ function Statusbar() {
     // useEffect(() => {
     //     store.loadIdNamePairs();
     // }, []);
-    // useEffect(() => {
-    //     store.loadAllPlaylists();
-    // }, []);
+    useEffect(() => {
+        store.loadAllPlaylists();
+    }, []);
 
     function handleCreateNewList() {
         store.createNewList();

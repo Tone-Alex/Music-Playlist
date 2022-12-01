@@ -40,6 +40,7 @@ const HomeScreen = () => {
                         key={playlist._id}
                         playlist={playlist}
                         selected={false}
+                        published={playlist.published}
                     />
                 ))
             }

@@ -277,7 +277,7 @@ body {
   margin: 10px;
   padding: 20px;
   border-radius: 25px;
-  background-color: var(--swatch-complement);
+  background-color: var(--swatch-complement) !important;
 }
 
 .list-card:aria-disabled,
@@ -294,8 +294,13 @@ body {
 
 .unselected-list-card:hover {
   cursor: pointer;
-  background-color: var(--swatch-contrast);
-  /* color: white; */
+  /* background-color: lightgray !important; */
+  border: 1px dotted rgb(5, 57, 112);
+  color: rgb(5, 57, 112);
+}
+
+.published-list-card {
+  background-color: lightblue !important;
 }
 
 .selected-list-card {
