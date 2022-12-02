@@ -67,8 +67,9 @@ function ListCard(props) {
         if (!store.currentList && event.detail === 2 && !playlist.published) {
             handleToggleEdit(event);
         } else {
-            // event.stopPropagation(true);
-            setListens(listens + 1);
+            if (playlist.published) {
+                setListens(listens + 1);
+            }
             store.setCurrentPlayingPlaylist(playlist._id, playlist.username);
         }
     }

@@ -39,6 +39,22 @@ export default function Navigation() {
         store.setScreen("USER");
     }
 
+    const handleSortByName = (event) => {
+        // store.sortPlaylistsByName();
+        store.setSortMethod("NAME");
+        handleMenuClose();
+    }
+    const handleSortByCreationDate = (event) => {
+        // store.sortPlaylistsByCreationDate();
+        store.setSortMethod("CREATION_DATE");
+        handleMenuClose();
+    }
+    const handleSortByEditDate = (event) => {
+        // store.sortPlaylistsByEditDate();
+        store.setSortMethod("EDIT_DATE");
+        handleMenuClose();
+    }
+
     const handleSortMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -66,9 +82,9 @@ export default function Navigation() {
             open={isSortMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem>Name (A - Z)</MenuItem>
-            <MenuItem>By Creation Date (Old - New)</MenuItem>
-            <MenuItem>By Last Edit Date (New - Old)</MenuItem>
+            <MenuItem onClick={handleSortByName}>Name (A - Z)</MenuItem>
+            <MenuItem onClick={handleSortByCreationDate}>By Creation Date (Old - New)</MenuItem>
+            <MenuItem onClick={handleSortByEditDate}>By Last Edit Date (New - Old)</MenuItem>
         </Menu>
 
     } else {
