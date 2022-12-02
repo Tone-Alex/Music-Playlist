@@ -24,8 +24,18 @@ function ListCard(props) {
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
     const { playlist, selected, published } = props;
+    const [listens, setListens] = useState(playlist.listens)
 
     const [open, setOpen] = useState(store.currentList && store.currentList._id === playlist._id);
+
+    function handleLike(event) {
+        event.stopPropagation(true);
+        store.likePlaylist(playlist._id, playlist.username);
+    }
+    function handleDislike(event) {
+        event.stopPropagation(true);
+        store.dislikePlaylist(playlist._id, playlist.username);
+    }
 
     function handleArrowClick(event) {
         event.stopPropagation();
@@ -54,11 +64,12 @@ function ListCard(props) {
 
     //checks for double click to start editing name of playlist
     function handleClick(event) {
-        if (!store.currentList && event.detail === 2) {
+        if (!store.currentList && event.detail === 2 && !playlist.published) {
             handleToggleEdit(event);
         } else {
             // event.stopPropagation(true);
-            store.setCurrentPlayingPlaylist(playlist._id);
+            setListens(listens + 1);
+            store.setCurrentPlayingPlaylist(playlist._id, playlist.username);
         }
     }
 
@@ -151,15 +162,13 @@ function ListCard(props) {
                 </div>
                 <div style={{display: 'flex', paddingRight: '15%'}}>
                     <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
-                        <IconButton className='likeIcon' aria-label='like'>
+                        <IconButton className='likeIcon' aria-label='like' onClick={handleLike}>
                             <ThumbUp style={{fontSize:'20pt'}} />
                             {playlist.likes}
                         </IconButton>
                     </Box>
                     <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
-                        <IconButton className='dislikeIcon' onClick={(event) => {
-                                handleDeleteList(event, playlist._id)
-                            }} aria-label='dislike'>
+                        <IconButton className='dislikeIcon' onClick={handleDislike} aria-label='dislike'>
                             <ThumbDown style={{fontSize:'20pt'}} />
                             {playlist.dislikes}
                         </IconButton>
@@ -176,7 +185,7 @@ function ListCard(props) {
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '73%', fontSize: '12pt'}}>
                     <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
                         Published {new Date(playlist.publishedDate).getFullYear()}</Box>
-                    <Box sx={{visibility: playlist.published ? "visible" : "hidden"}}>Listens {playlist.listens}</Box>
+                    <Box sx={{visibility: playlist.published ? "visible" : "hidden"}}>Listens {listens}</Box>
                 </div>
                 <div>
                     <Box sx={{ p: 1 }}>

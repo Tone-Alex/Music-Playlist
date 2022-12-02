@@ -8,6 +8,7 @@ import Fab from '@mui/material/Fab'
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography'
 import MUIErrorPopup from './MUIErrorPopup';
+import AuthContext from '../auth';
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -15,12 +16,18 @@ import MUIErrorPopup from './MUIErrorPopup';
 */
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
 
     // useEffect(() => {
     //     store.loadIdNamePairs();
     // }, []);
     useEffect(() => {
-        store.loadAllPlaylists();
+        if (auth.loggedIn) {
+            store.setScreen("HOME");
+        } else {
+            store.setScreen("ALL_LISTS");
+        }
+        // store.loadAllPlaylists();              
     }, []);
 
     let listCard = "";
@@ -28,14 +35,8 @@ const HomeScreen = () => {
         listCard = 
             <List sx={{ width: '90%', left: '5%' }}>
             {
-                // store.idNamePairs.map((pair) => (
-                //     <ListCard
-                //         key={pair._id}
-                //         idNamePair={pair}
-                //         selected={false}
-                //     />
-                // ))
                 store.currentPlaylists.map((playlist) => (
+
                     <ListCard
                         key={playlist._id}
                         playlist={playlist}

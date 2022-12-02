@@ -10,7 +10,9 @@ import Groups from '@mui/icons-material/Groups';
 import Person from '@mui/icons-material/Person';
 import Sort from '@mui/icons-material/Sort';
 import { TextField } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import GlobalStoreContext from '../store';
+import AuthContext from '../auth';
 
 
 const buttonStyle = {
@@ -20,8 +22,22 @@ const buttonStyle = {
 
 export default function Navigation() {
 
+    const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const isSortMenuOpen = Boolean(anchorEl);
+
+    const handleHomeClick = (event) => {
+        store.setScreen("HOME");
+    }
+
+    const handleAllListsClick = (event) => {
+        store.setScreen("ALL_LISTS");
+    }
+
+    const handleUserClick = (event) => {
+        store.setScreen("USER");
+    }
 
     const handleSortMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -32,28 +48,53 @@ export default function Navigation() {
     };
 
     const sortID = "primary-search-sort-menu"
-    const sortMenu = 
-    <Menu
-        anchorEl={anchorEl}
-        anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-        }}
-        id={sortID}
-        keepMounted
-        transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-        }}
-        open={isSortMenuOpen}
-        onClose={handleMenuClose}
-    >
-        <MenuItem>Name (A - Z)</MenuItem>
-        <MenuItem>Publish Date (Newest))</MenuItem>
-        <MenuItem>Listens (High - Low)</MenuItem>
-        <MenuItem>Likes (High - Low)</MenuItem>
-        <MenuItem>Dislikes (High - Low)</MenuItem>
-    </Menu>
+    let sortMenu = "";
+    if (store.currentScreen === "HOME") {
+        sortMenu = 
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            id={sortID}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isSortMenuOpen}
+            onClose={handleMenuClose}
+        >
+            <MenuItem>Name (A - Z)</MenuItem>
+            <MenuItem>By Creation Date (Old - New)</MenuItem>
+            <MenuItem>By Last Edit Date (New - Old)</MenuItem>
+        </Menu>
+
+    } else {
+        sortMenu = 
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            id={sortID}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isSortMenuOpen}
+            onClose={handleMenuClose}
+        >
+            <MenuItem>Name (A - Z)</MenuItem>
+            <MenuItem>Publish Date (Newest))</MenuItem>
+            <MenuItem>Listens (High - Low)</MenuItem>
+            <MenuItem>Likes (High - Low)</MenuItem>
+            <MenuItem>Dislikes (High - Low)</MenuItem>
+        </Menu>
+    }
 
 
 
@@ -65,9 +106,12 @@ export default function Navigation() {
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <IconButton
                             sx={buttonStyle}
+                            style={{border: store.currentScreen === "HOME" ? "1px solid #053970" : "",
+                                    visibility: auth.loggedIn ? "visible" : "hidden"}}
                             aria-label="Logged-in user Playlists"
                             aria-haspopup="true"
                             color="inherit"
+                            onClick={handleHomeClick}
                         >
                             <Home fontSize='large' />
                         </IconButton>
@@ -75,9 +119,11 @@ export default function Navigation() {
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <IconButton
                             sx={buttonStyle}
+                            style={{border: store.currentScreen === "ALL_LISTS" ? "1px solid #053970" : ""}}
                             aria-label="All published playlists"
                             aria-haspopup="true"
                             color="inherit"
+                            onClick={handleAllListsClick}
                         >
                             <Groups fontSize='large'/>
                         </IconButton>
@@ -85,9 +131,11 @@ export default function Navigation() {
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <IconButton
                             sx={buttonStyle}
+                            style={{border: store.currentScreen === "USER" ? "1px solid #053970" : ""}}
                             aria-label="User specified playlists"
                             aria-haspopup="true"
                             color="inherit"
+                            onClick={handleUserClick}
                         >
                             <Person fontSize='large'/>
                         </IconButton>

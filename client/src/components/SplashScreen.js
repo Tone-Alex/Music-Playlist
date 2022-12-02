@@ -6,6 +6,8 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 
 import logo from "../images/logo.png"
 import Copyright from "./Copyright";
+import { useContext } from "react";
+import AuthContext from "../auth";
 
 // const buttonStyle = {
 //     backgroundColor: '#053970', 
@@ -30,6 +32,13 @@ const buttonStyle = {
 
 
 export default function SplashScreen() {
+
+    const { auth } = useContext(AuthContext);
+
+    function handleGuestLogin(event) {
+        auth.guestLogin();
+    }
+
     return (
         <div id="splash-screen">
             <div className="welcome-header">
@@ -53,7 +62,7 @@ export default function SplashScreen() {
                 <Button href="/register/" variant='contained' sx={buttonStyle} startIcon={<PersonAdd />}>
                     Create Account
                 </Button>
-                <Button variant='contained' sx={buttonStyle} startIcon={<Person />}>
+                <Button variant='contained' sx={buttonStyle} onClick={handleGuestLogin} startIcon={<Person />}>
                     Continue as Guest
                 </Button>
             </div>

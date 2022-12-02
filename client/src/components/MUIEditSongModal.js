@@ -22,7 +22,8 @@ export default function MUIEditSongModal() {
     const [ artist, setArtist ] = useState(store.currentSong.artist);
     const [ youTubeId, setYouTubeId ] = useState(store.currentSong.youTubeId);
 
-    function handleConfirmEditSong() {
+    function handleConfirmEditSong(event) {
+        event.stopPropagation(true);
 
         let songTitle = title;
         let songArtist = artist;
@@ -46,7 +47,8 @@ export default function MUIEditSongModal() {
         store.addUpdateSongTransaction(store.currentSongIndex, newSongData);        
     }
 
-    function handleCancelEditSong() {
+    function handleCancelEditSong(event) {
+        event.stopPropagation(true);
         store.hideModals();
     }
 
@@ -86,7 +88,8 @@ export default function MUIEditSongModal() {
                         className='modal-textfield' 
                         type="text" 
                         defaultValue={title} 
-                        onChange={handleUpdateTitle} />
+                        onChange={handleUpdateTitle}
+                        onClick={(event) => event.stopPropagation(true)} />
                     </div>
                     <div id="artist-prompt" className="modal-prompt">Artist:
                     <input 
@@ -94,7 +97,8 @@ export default function MUIEditSongModal() {
                         className='modal-textfield' 
                         type="text" 
                         defaultValue={artist} 
-                        onChange={handleUpdateArtist} />
+                        onChange={handleUpdateArtist} 
+                        onClick={(event) => event.stopPropagation(true)}/>
                     </div>
                     <div id="you-tube-id-prompt" className="modal-prompt">YouTube Id:
                     <input 
@@ -102,7 +106,8 @@ export default function MUIEditSongModal() {
                         className='modal-textfield' 
                         type="text" 
                         defaultValue={youTubeId} 
-                        onChange={handleUpdateYouTubeId} />
+                        onChange={handleUpdateYouTubeId}
+                        onClick={(event) => event.stopPropagation(true)} />
                     </div>
                 </div>
                 <div className="song-modal-south">

@@ -267,7 +267,7 @@ updatePlaylistByUser = async (req, res) => {
         })
     }
 
-    Playlist.findOne({ username: req.params.user }, (err, playlist) => {
+    Playlist.findOne({ _id: body.playlist._id }, (err, playlist) => {
         console.log("playlist found: " + JSON.stringify(playlist));
         if (err) {
             return res.status(404).json({

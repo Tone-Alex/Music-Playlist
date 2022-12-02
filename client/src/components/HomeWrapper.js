@@ -9,7 +9,7 @@ export default function HomeWrapper() {
     const { auth } = useContext(AuthContext);
     console.log("HomeWrapper auth.loggedIn: " + auth.loggedIn);
     
-    if (auth.loggedIn)
+    if (auth.loggedIn || auth.guest)
         return (
             <div id="home-wrapper">
                 <Navigation />
@@ -18,7 +18,6 @@ export default function HomeWrapper() {
                     <YouTubePlayerWrapper />
                 </div>            
             </div>
-
         )
     else
         return <SplashScreen />

@@ -32,7 +32,9 @@ function SongCard(props) {
             setDraggedTo(false);
 
             // UPDATE THE LIST
-            store.addMoveSongTransaction(sourceIndex, targetIndex);
+            if (!store.currentList.published) {
+                store.addMoveSongTransaction(sourceIndex, targetIndex);
+            }
         }
 
     }
@@ -42,7 +44,7 @@ function SongCard(props) {
     function handleClick(event) {
         // DOUBLE CLICK IS FOR SONG EDITING
         event.stopPropagation(true);
-        if (event.detail === 2) {
+        if (event.detail === 2 && !store.currentList.published) {
             store.showEditSongModal(index, song);
         }
     }
@@ -71,6 +73,7 @@ function SongCard(props) {
             <input
                 type="button"
                 id={"remove-song-" + index}
+                style={{visibility: store.currentList.published ? "hidden" : "visible"}}
                 className="list-card-button"
                 value={"\u2715"}
                 onClick={handleRemoveSong}
