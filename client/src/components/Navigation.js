@@ -55,6 +55,22 @@ export default function Navigation() {
         store.setSortMethod("EDIT_DATE");
         handleMenuClose();
     }
+    const handleSortByPublishDate = (event) => {
+        store.setSortMethod("PUBLISH_DATE");
+        handleMenuClose();
+    }
+    const handleSortByListens = (event) => {
+        store.setSortMethod("LISTENS");
+        handleMenuClose();
+    }
+    const handleSortByLikes = (event) => {
+        store.setSortMethod("LIKES");
+        handleMenuClose();
+    }
+    const handleSortByDislikes = (event) => {
+        store.setSortMethod("DISLIKES");
+        handleMenuClose();
+    }
 
     const handleSortMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -123,11 +139,11 @@ export default function Navigation() {
             open={isSortMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem>Name (A - Z)</MenuItem>
-            <MenuItem>Publish Date (Newest))</MenuItem>
-            <MenuItem>Listens (High - Low)</MenuItem>
-            <MenuItem>Likes (High - Low)</MenuItem>
-            <MenuItem>Dislikes (High - Low)</MenuItem>
+            <MenuItem onClick={handleSortByName}>Name (A - Z)</MenuItem>
+            <MenuItem onClick={handleSortByPublishDate}>Publish Date (Newest))</MenuItem>
+            <MenuItem onClick={handleSortByListens}>Listens (High - Low)</MenuItem>
+            <MenuItem onClick={handleSortByLikes}>Likes (High - Low)</MenuItem>
+            <MenuItem onClick={handleSortByDislikes}>Dislikes (High - Low)</MenuItem>
         </Menu>
     }
 

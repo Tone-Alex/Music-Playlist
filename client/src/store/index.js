@@ -62,7 +62,11 @@ const CurrentScreen = {
 const SortMethod = {
     NAME: "NAME",
     CREATION_DATE: "CREATION_DATE",
-    EDIT_DATE: "EDIT_DATE"
+    EDIT_DATE: "EDIT_DATE",
+    PUBLISH_DATE: "PUBLISH_DATE",
+    LISTENS: "LISTENS",
+    LIKES: "LIKES",
+    DISLIKES: "DISLIKES"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -255,9 +259,9 @@ function GlobalStoreContextProvider(props) {
                     currentScreen: store.currentScreen,
                     currentModal : CurrentModal.NONE,
                     idNamePairs: store.idNamePairs,
-                    currentPlaylists: store.currentPlaylists,
+                    currentPlaylists: payload.playlists,
                     currentList: store.currentList,
-                    currentPlayingPlaylist: payload,
+                    currentPlayingPlaylist: payload.playlist,
                     currentSongIndex: store.currentSongIndex,
                     currentSong: store.currentSong,
                     newListCounter: store.newListCounter,
@@ -861,6 +865,18 @@ function GlobalStoreContextProvider(props) {
         else if (type === SortMethod.EDIT_DATE) {
             playlists = store.sortPlaylistsByEditDate(playlists);
         }
+        else if (type === SortMethod.PUBLISH_DATE) {
+            playlists = store.sortPlaylistsByPublishDate(playlists);
+        }
+        else if (type === SortMethod.LISTENS) {
+            playlists = store.sortPlaylistsByListens(playlists);
+        }
+        else if (type === SortMethod.LIKES) {
+            playlists = store.sortPlaylistsByLikes(playlists)
+        }
+        else if (type === SortMethod.DISLIKES) {
+            playlists = store.sortPlaylistsByDislikes(playlists)
+        }
 
         return playlists;
     }
@@ -896,6 +912,36 @@ function GlobalStoreContextProvider(props) {
             return new Date(second.publishedDate) - new Date(first.publishedDate)
         });
         let playlists = unpublishedPlaylists.concat(publishedPlaylists);
+        return playlists;
+    }
+
+    store.sortPlaylistsByPublishDate = function(list) {
+        let playlists = list;
+        playlists.sort((first, second) => {
+            return new Date(second.publishedDate) - new Date(first.publishedDate)
+        })
+        return playlists;
+    }
+
+    store.sortPlaylistsByListens = function(list) {
+        let playlists = list;
+        playlists.sort((first, second) => {
+            return second.listens - first.listens
+        });
+        return playlists;
+    }
+    store.sortPlaylistsByLikes = function(list) {
+        let playlists = list;
+        playlists.sort((first, second) => {
+            return second.likes - first.likes
+        });
+        return playlists;
+    }
+    store.sortPlaylistsByDislikes = function(list) {
+        let playlists = list;
+        playlists.sort((first, second) => {
+            return second.dislikes - first.dislikes
+        });
         return playlists;
     }
 
@@ -965,6 +1011,15 @@ function GlobalStoreContextProvider(props) {
         async function asyncSetCurrentPlayingList(id, user) {
             let response = await api.getPlaylistsByUser(user);
             if (response.data.success) {
+
+                let currentPlaylists = store.currentPlaylists;
+                let updatedList = currentPlaylists.map(list => {
+                    if (list._id === id) {
+                        list.listens += 1
+                    }
+                    return list;
+                });
+
                 let playlistsArray = response.data.playlists;
                 let playlist = playlistsArray.find(list => list._id === id);
                 if (playlist) {
@@ -973,9 +1028,13 @@ function GlobalStoreContextProvider(props) {
                     }
                     response = await api.updatePlaylistByUser(user, playlist);
                     if (response.data.success) {
+                        updatedList = store.sortPlaylists(store.sort, updatedList);
                         storeReducer({
                             type: GlobalStoreActionType.SET_CURRENT_PLAYLING_PLAYLIST,
-                            payload: playlist
+                            payload: {
+                                playlist: playlist,
+                                playlists: updatedList
+                            }
                         });
                     }
                 }
@@ -990,18 +1049,28 @@ function GlobalStoreContextProvider(props) {
         async function asyncLikePlaylist(id, user) {
             let response = await api.getPlaylistsByUser(user);
             if (response.data.success) {
+
+                let currentPlaylists = store.currentPlaylists;
+                let updatedList = currentPlaylists.map(list => {
+                    if (list._id === id) {
+                        list.likes += 1
+                    }
+                    return list;
+                });
+
                 let playlistsArray = response.data.playlists;
                 let playlist = playlistsArray.find(list => list._id === id);
                 console.log("PLAYLIST FOUND: " + JSON.stringify(playlist));
                 if (playlist) {
                     playlist.likes += 1;
                     response = await api.updatePlaylistByUser(user, playlist);
-
                     //SET THE CURRENT PLAYLISTS AFTER SORTING IT BASED ON STORE.SORT
                     if (response.data.success) {
-                        if (store.currentScreen === "HOME") {
-                            store.loadAllPlaylists();
-                        }
+                        updatedList = store.sortPlaylists(store.sort, updatedList);
+                        storeReducer({
+                            type: GlobalStoreActionType.LOAD_CURRENT_PLAYLISTS,
+                            payload: updatedList
+                        });
                     }
                 }
             }
@@ -1012,16 +1081,26 @@ function GlobalStoreContextProvider(props) {
         async function asyncLikePlaylist(id, user) {
             let response = await api.getPlaylistsByUser(user);
             if (response.data.success) {
+
+                let currentPlaylists = store.currentPlaylists;
+                let updatedList = currentPlaylists.map(list => {
+                    if (list._id === id) {
+                        list.dislikes += 1
+                    }
+                    return list;
+                });
+
                 let playlistsArray = response.data.playlists;
                 let playlist = playlistsArray.find(list => list._id === id);
-                console.log("PLAYLIST FOUND: " + JSON.stringify(playlist));
                 if (playlist) {
                     playlist.dislikes += 1;
                     response = await api.updatePlaylistByUser(user, playlist);
                     if (response.data.success) {
-                        if (store.currentScreen === "HOME") {
-                            store.loadAllPlaylists();
-                        }
+                        updatedList = store.sortPlaylists(store.sort, updatedList);
+                        storeReducer({
+                            type: GlobalStoreActionType.LOAD_CURRENT_PLAYLISTS,
+                            payload: updatedList
+                        });
                     }
                 }
             }
