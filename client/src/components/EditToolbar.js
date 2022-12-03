@@ -77,6 +77,7 @@ function EditToolbar() {
                 </Button>
                 <Button
                     disabled={!store.currentList}
+                    style={{visibility: store.currentScreen === "HOME" ? "visible" : "hidden"}}
                     id='delete-playlist-button'
                     onClick={handleDeleteList}
                     variant="contained">

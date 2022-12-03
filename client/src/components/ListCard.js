@@ -10,7 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
 
 import WorkspaceScreen from './WorkspaceScreen';
-import { Collapse } from '@mui/material';
+import { Collapse, Typography } from '@mui/material';
 
 /*
     This is a card in our list of lists. It lets select
@@ -25,15 +25,25 @@ function ListCard(props) {
     const [text, setText] = useState("");
     const { playlist, selected, published } = props;
     const [listens, setListens] = useState(playlist.listens)
+    const [likes, setLikes] = useState(playlist.likes);
+    const [dislikes, setDislikes] = useState(playlist.dislikes);
 
     const [open, setOpen] = useState(store.currentList && store.currentList._id === playlist._id);
 
+    function handleUserClick(event) {
+        console.log("USER: " + playlist.username);
+        event.stopPropagation(true);
+        store.loadUserPlaylists(playlist.username);
+    }
+
     function handleLike(event) {
         event.stopPropagation(true);
+        if (playlist.published) {setLikes(likes + 1)}
         store.likePlaylist(playlist._id, playlist.username);
     }
     function handleDislike(event) {
         event.stopPropagation(true);
+        if (playlist.published) {setDislikes(dislikes + 1)}
         store.dislikePlaylist(playlist._id, playlist.username);
     }
 
@@ -58,7 +68,7 @@ function ListCard(props) {
             console.log("load " + event.target.id);
 
             // CHANGE THE CURRENT LIST
-            store.setCurrentList(id);
+            store.setCurrentList(id, playlist.username);
         }
     }
 
@@ -151,7 +161,7 @@ function ListCard(props) {
             key={playlist._id}
             // sx={{ marginTop: '15px', p: 1, backgroundColor: '#e1e4cb'}}
             sx={{ marginTop: '15px', p: 1}}
-            style={{ width: '100%', fontSize: '16pt', borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
+            style={{ width: '100%', fontFamily: 'Arial', fontSize: '16pt', fontWeight: 'bold', borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
             button
             onClick={handleClick}
             // disabled={store.listNameActive}
@@ -159,19 +169,22 @@ function ListCard(props) {
             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
                 <div>
                     <Box sx={{ p: 1}}>{playlist.name}</Box>
-                    <Box sx={{paddingLeft: 1, fontSize: '12pt'}}>By: {playlist.username}</Box>
+                    <Box sx={{paddingLeft: 1, fontSize: '12pt'}}>
+                        <Typography onClick={handleUserClick}>By: <span style={{color: 'blue', textDecoration: 'underline', fontWeight: 'bold'}}>
+                            {playlist.username}</span></Typography>
+                        </Box>
                 </div>
                 <div style={{display: 'flex', paddingRight: '15%'}}>
                     <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
                         <IconButton className='likeIcon' aria-label='like' onClick={handleLike}>
                             <ThumbUp style={{fontSize:'20pt'}} />
-                            {playlist.likes}
+                            {likes}
                         </IconButton>
                     </Box>
                     <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
                         <IconButton className='dislikeIcon' onClick={handleDislike} aria-label='dislike'>
                             <ThumbDown style={{fontSize:'20pt'}} />
-                            {playlist.dislikes}
+                            {dislikes}
                         </IconButton>
                     </Box>
                 </div>
@@ -184,9 +197,10 @@ function ListCard(props) {
             
             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'end'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '73%', fontSize: '12pt'}}>
-                    <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
-                        Published {new Date(playlist.publishedDate).getFullYear()}</Box>
-                    <Box sx={{visibility: playlist.published ? "visible" : "hidden"}}>Listens {listens}</Box>
+                    <Box sx={{ p: 1, color: 'green', visibility: playlist.published ? "visible" : "hidden"}}>
+                        Published {new Date(playlist.publishedDate).toLocaleDateString('en-us', {year:"numeric", month:"short", day:"numeric"})}
+                        </Box>
+                    <Box sx={{color: 'red', visibility: playlist.published ? "visible" : "hidden"}}>Listens: {listens}</Box>
                 </div>
                 <div>
                     <Box sx={{ p: 1 }}>

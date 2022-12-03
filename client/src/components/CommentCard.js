@@ -1,9 +1,18 @@
 import { ListItem, Typography, Box } from "@mui/material";
+import { useContext } from "react";
+import GlobalStoreContext from "../store";
 
 
 export default function CommentCard(props) {
 
+    const { store } = useContext(GlobalStoreContext);
     const {user, message} = props
+
+    function handleUserClick(event) {
+        console.log("USER: " + user);
+        event.stopPropagation(true);
+        store.loadUserPlaylists(user);
+    }
 
     return (
         <ListItem
@@ -12,8 +21,11 @@ export default function CommentCard(props) {
         >
             <div className="comment-card">
                 <Box>
-                    {/* ADD THIS AS A LINK??? WITH TEXT DECORATION */}
-                    <Typography>{user}</Typography>     
+                    {/* <Typography>{user}</Typography>      */}
+                    <Typography onClick={handleUserClick}>By: 
+                    <span style={{cursor: 'pointer', color: 'blue', textDecoration: 'underline', fontWeight: 'bold'}}>
+                            {user}</span>
+                    </Typography>
                 </Box>
                 <Box>
                     <Typography>{message}</Typography>

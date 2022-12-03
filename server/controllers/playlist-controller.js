@@ -1,5 +1,7 @@
 const Playlist = require('../models/playlist-model')
 const User = require('../models/user-model');
+const auth = require('../auth')
+
 /*
     This is our back-end API. It provides all the data services
     our database needs. Note that this file contains the controller
@@ -137,6 +139,42 @@ getPlaylistsByUser = async (req, res) => {
     }).catch(err => console.log(err))
 
 }
+getPlaylistsByKeyword = async (req, res) => {
+    let regexExpression = new RegExp(req.params.keyword, "gi");
+    await Playlist.find({ name: {$regex: regexExpression}, published: true}, (err, playlists) => {
+        console.log("found Playlists: " + JSON.stringify(playlists));
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!playlists) {
+            console.log("!playlists.length");
+            return res
+                .status(404)
+                .json({ success: false, error: 'Playlists not found' })
+        }
+        else {
+            return res.status(200).json({ success: true, playlists: playlists, keyword: req.params.keyword })
+        }
+    }).catch(err => console.log(err))
+}
+getPlaylistsByUserKeyword = async (req, res) => {
+    let regexExpression = new RegExp(req.params.username, "gi");
+    await Playlist.find({ username: {$regex: regexExpression}, published: true}, (err, playlists) => {
+        console.log("found Playlists: " + JSON.stringify(playlists));
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!playlists) {
+            console.log("!playlists.length");
+            return res
+                .status(404)
+                .json({ success: false, error: 'Playlists not found' })
+        }
+        else {
+            return res.status(200).json({ success: true, playlists: playlists, keyword: req.params.keyword })
+        }
+    }).catch(err => console.log(err))
+}
 
 getPlaylistPairs = async (req, res) => {
     console.log("getPlaylistPairs");
@@ -175,23 +213,31 @@ getPlaylistPairs = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getPlaylists = async (req, res) => {
-    // if(auth.verifyUser(req) === null){
-    //     return res.status(400).json({
-    //         errorMessage: 'UNAUTHORIZED'
-    //     })
-    // }
-    await Playlist.find({}, (err, playlists) => {
-        if (err) {
-            return res.status(400).json({ success: false, error: err })
+    
+    await User.findOne({ _id: req.userId }, (err, user) => {
+        async function asyncFindList(email) {
+            await Playlist.find({ ownerEmail: email }, (err, playlists) => {
+                console.log("found Playlists: " + JSON.stringify(playlists));
+                if (err) {
+                    return res.status(400).json({ success: false, error: err })
+                }
+                if (!playlists) {
+                    console.log("!playlists.length");
+                    return res
+                        .status(404)
+                        .json({ success: false, error: 'Playlists not found' })
+                }
+                else {
+                    console.log("Send the Playlists");
+                    return res.status(200).json({ success: true, playlists: playlists })
+                }
+            }).catch(err => console.log(err))
         }
-        if (!playlists.length) {
-            return res
-                .status(404)
-                .json({ success: false, error: `Playlists not found` })
-        }
-        return res.status(200).json({ success: true, playlists: playlists })
+        asyncFindList(user.email);
     }).catch(err => console.log(err))
+    
 }
+
 updatePlaylist = async (req, res) => {
     const body = req.body
     console.log("updatePlaylist: " + JSON.stringify(body));
@@ -311,6 +357,8 @@ module.exports = {
     getPlaylistPairs,
     getPlaylists,
     getPlaylistsByUser,
+    getPlaylistsByKeyword,
+    getPlaylistsByUserKeyword,
     updatePlaylist,
     updatePlaylistByUser
 }

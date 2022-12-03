@@ -25,6 +25,7 @@ export default function Navigation() {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [searchInput, setSearchInput] = useState("");
     const isSortMenuOpen = Boolean(anchorEl);
 
     const handleHomeClick = (event) => {
@@ -62,6 +63,24 @@ export default function Navigation() {
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
+
+    function handleUpdateSearch(event) {
+        setSearchInput(event.target.value);
+    }
+    function handleKeyPress(event) {
+        if (event.code === "Enter") {
+            if (store.currentScreen === "HOME") {
+                store.searchPlaylist(searchInput);
+            }
+            if (store.currentScreen === "ALL_LISTS") {
+                store.loadPlaylistsByKeyword(searchInput);
+            }
+            if (store.currentScreen === "USER") {
+                store.loadPlaylistsByUser(searchInput);
+            }
+            setSearchInput("");
+        }
+    }
 
     const sortID = "primary-search-sort-menu"
     let sortMenu = "";
@@ -164,6 +183,9 @@ export default function Navigation() {
                             id="search-input"
                             label="Search"
                             name="searchKeyword"
+                            onChange={handleUpdateSearch}
+                            onKeyPress={handleKeyPress}
+                            value={searchInput}
                         />
                 </div>
                 <div className="sort-playlist" style={{color: 'rgb(5,57,112)', fontWeight: 'bold'}}>
