@@ -26,17 +26,14 @@ export default function YouTubePlayer() {
     // THIS HAS THE YOUTUBE IDS FOR THE SONGS IN OUR PLAYLIST
     let playlist = [];
     let currentPlayingPlaylist = store.currentPlayingPlaylist;
+    let currentSong = 0;
+    let currentPlayingSong = "";
     if (currentPlayingPlaylist) {
         playlist = currentPlayingPlaylist.songs.map((song) => (
             song.youTubeId
         ))
-    }
-
-    // THIS IS THE INDEX OF THE SONG CURRENTLY IN USE IN THE PLAYLIST
-    let currentSong = 0;
-    let currentPlayingSong = null;
-    if (currentPlayingPlaylist) {
-        currentPlayingSong = currentPlayingPlaylist.songs[currentSong];
+        currentPlayingSong = store.currentPlayingSong;
+        currentSong = currentPlayingPlaylist.songs.indexOf(currentPlayingSong);
     }
 
     const playerOptions = {
@@ -52,9 +49,11 @@ export default function YouTubePlayer() {
     // THE PLAYER AND PLAYS IT
     function loadAndPlayCurrentSong(player) {
         setPlayer(player);
-        let song = playlist[currentSong];
-        player.loadVideoById(song);
-        player.playVideo();
+        if (currentPlayingSong) {
+            let song = currentPlayingSong.youTubeId;
+            player.loadVideoById(song);
+            player.playVideo();
+        }
     }
 
     // THIS FUNCTION INCREMENTS THE PLAYLIST SONG TO THE NEXT ONE
@@ -87,8 +86,7 @@ export default function YouTubePlayer() {
         } else if (playerStatus === 0) {
             // THE VIDEO HAS COMPLETED PLAYING
             console.log("0 Video ended");
-            incSong();
-            loadAndPlayCurrentSong(player);
+            handleFastForward();
         } else if (playerStatus === 1) {
             // THE VIDEO IS PLAYED
             console.log("1 Video played");
@@ -104,24 +102,43 @@ export default function YouTubePlayer() {
         }
     }
 
+    //RERENDER THE COMPONENTS TO REFLECT THE CHANGES
     function handleFastRewind() {
         decSong();
-        loadAndPlayCurrentSong(player);
+        let newSong = currentPlayingPlaylist.songs.find(song => song.youTubeId === playlist[currentSong]);
+        store.setCurrentPlayingSong(newSong);
+
     }
 
     function handleFastForward() {
         incSong();
-        loadAndPlayCurrentSong(player);
+        let newSong = currentPlayingPlaylist.songs.find(song => song.youTubeId === playlist[currentSong]);
+        store.setCurrentPlayingSong(newSong);
     }
 
-    return (
-        <div>
-            <YouTube
-            videoId={playlist[currentSong]}
+    let songPlayer = "";
+    if (currentPlayingSong) {
+        songPlayer = <YouTube
+            // videoId={playlist[currentSong]}
+            videoId={currentPlayingSong.youTubeId}
             opts={playerOptions}
             onReady={onPlayerReady}
             onStateChange={onPlayerStateChange}
             />
+    }
+
+    return (
+        <div>
+            {/* <Box sx={{visibility: currentPlayingSong ? "visible" : "hidden"}}>
+            <YouTube
+            // videoId={playlist[currentSong]}
+            videoId={currentPlayingSong.youTubeId}
+            opts={playerOptions}
+            onReady={onPlayerReady}
+            onStateChange={onPlayerStateChange}
+            />
+            </Box> */}
+            {songPlayer}
 
             <div id="playing-song-container">
                 <h4 style={{textAlign: 'center', padding: 0, margin: 0}}>Now Playing</h4>
@@ -131,7 +148,7 @@ export default function YouTubePlayer() {
                 <p>Artist: {currentPlayingSong ? currentPlayingSong.artist : "" }</p>
 
                 <div>
-                    <AppBar position='static' id="play-song-options">
+                    <AppBar position='static' id="play-song-options" sx={{visibility: currentPlayingPlaylist ? "visible" : "hidden"}}>
                         <Toolbar className='song-control-bar'>
                             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                                 <IconButton

@@ -39,6 +39,7 @@ function SongCard(props) {
 
     }
     function handleRemoveSong(event) {
+        event.stopPropagation(true);
         store.showRemoveSongModal(index, song);
     }
     function handleClick(event) {
@@ -49,7 +50,11 @@ function SongCard(props) {
         }
     }
 
-    let cardClass = "list-card unselected-list-card";
+    let cardClass = "song-list-card unselected-song-list-card";
+    if (store.currentPlayingSong && song.youTubeId === store.currentPlayingSong.youTubeId) {
+        cardClass = "current-playing-song"        
+    }
+
     return (
         <div
             key={index}

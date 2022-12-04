@@ -17,11 +17,13 @@ const style = {
 export default function MUIRemoveSongModal() {
     const { store } = useContext(GlobalStoreContext);
 
-    function handleConfirmRemoveSong () {
+    function handleConfirmRemoveSong (event) {
+        event.stopPropagation(true);
         store.addRemoveSongTransaction();
     }
 
-    function handleCancelRemoveSong () {
+    function handleCancelRemoveSong (event) {
+        event.stopPropagation(true);
         store.hideModals();
     }
     

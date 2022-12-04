@@ -188,6 +188,8 @@ body {
   min-height: 48px !important;
   display: flex;
   justify-content: center;
+  background-color: rgb(5, 57, 112);
+  border-radius: 10px;
 }
 
 #playlist-selector {
@@ -224,7 +226,7 @@ body {
   top: 10%; */
   width: 100%;
   margin: 0 auto;
-  background-color: var(--swatch-accent);
+  /* background-color: var(--swatch-accent); */
   overflow-y: scroll;
 }
 
@@ -256,6 +258,7 @@ body {
 }
 
 #add-list-button {
+  background-color: rgb(5, 57, 112);
   float: left;
 }
 
@@ -270,9 +273,9 @@ body {
   overflow-y: scroll;
 }
 
-.list-card,
+.list-card, .song-list-card
 .selected-list-card,
-.unselected-list-card {
+.unselected-list-card, .unselected-song-list-card {
   font-size: 18pt;
   margin: 10px;
   padding: 20px;
@@ -280,8 +283,15 @@ body {
   background-color: var(--swatch-complement) !important;
 }
 
-.list-card:aria-disabled,
-.list-card[aria-disabled] {
+.song-list-card,
+.song-list-card a,
+.unselected-song-list-card {
+  color: white;
+  background-color: rgb(5, 57, 112) !important;
+}
+
+.list-card:aria-disabled, .song-list-card:aria-disabled
+.list-card[aria-disabled], .song-list-card[aria-disabled] {
   border: 1px solid #999999;
   background-color: #cccccc;
   color: #666666;
@@ -294,9 +304,19 @@ body {
 
 .unselected-list-card:hover {
   cursor: pointer;
-  /* background-color: lightgray !important; */
   border: 1px dotted rgb(5, 57, 112);
   color: rgb(5, 57, 112);
+}
+
+.current-playing-song {
+  font-size: 18pt;
+  margin: 10px;
+  padding: 20px;
+  border-radius: 25px;
+  background-color: rgb(245, 88, 88) !important;
+}
+.current-playing-song a {
+  color: white;
 }
 
 .published-list-card {
@@ -332,6 +352,12 @@ body {
 .edit-toolbar-buttons > button {
   border-radius: 10px;
   margin: 10px;
+  font-weight: bold;
+  background-color: rgb(5, 57, 112);
+}
+.edit-toolbar-buttons > button:hover, #add-song-button:hover {
+  background-color: rgb(5, 57, 112);
+  color: #f2f26e;
 }
 
 .add-song-container {
@@ -341,6 +367,7 @@ body {
 #add-song-button {
   border-radius: 10px;
   margin-top: 10px;
+  background-color: rgb(5, 57, 112);
 }
 
 #edit-numbering {

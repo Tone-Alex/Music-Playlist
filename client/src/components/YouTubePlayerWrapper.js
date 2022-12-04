@@ -18,8 +18,8 @@ export default function YouTubePlayerWrapper() {
   return (
     <div id="YouTube-player-wrapper">
         <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="YouTube Player Tabs">
+            <Box sx={{ borderBottom: 1, borderColor: 'divider'}}>
+                <Tabs textColor='secondary' indicatorColor='secondary' value={value} onChange={handleChange} aria-label="YouTube Player Tabs">
                     <Tab label="Player" />
                     <Tab label="Comments" />
                 </Tabs>

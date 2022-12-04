@@ -21,7 +21,8 @@ function WorkspaceScreen() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
-    function handleAddNewSong() {
+    function handleAddNewSong(event) {
+        event.stopPropagation(true);
         store.addNewSong();
     }
     
