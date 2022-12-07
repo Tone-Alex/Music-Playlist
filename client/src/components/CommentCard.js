@@ -22,7 +22,7 @@ export default function CommentCard(props) {
             <div className="comment-card">
                 <Box>
                     {/* <Typography>{user}</Typography>      */}
-                    <Typography onClick={handleUserClick}>By: 
+                    <Typography onClick={handleUserClick}> 
                     <span style={{cursor: 'pointer', color: 'blue', textDecoration: 'underline', fontWeight: 'bold'}}>
                             {user}</span>
                     </Typography>

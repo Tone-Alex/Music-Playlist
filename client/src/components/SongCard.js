@@ -54,7 +54,7 @@ function SongCard(props) {
     if (store.currentPlayingSong && song.youTubeId === store.currentPlayingSong.youTubeId) {
         cardClass = "current-playing-song"        
     }
-
+    
     return (
         <div
             key={index}

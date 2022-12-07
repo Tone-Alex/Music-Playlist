@@ -21,7 +21,8 @@ export default function YouTubePlayerWrapper() {
             <Box sx={{ borderBottom: 1, borderColor: 'divider'}}>
                 <Tabs textColor='secondary' indicatorColor='secondary' value={value} onChange={handleChange} aria-label="YouTube Player Tabs">
                     <Tab label="Player" />
-                    <Tab label="Comments" />
+                    <Tab label="Comments" disabled={(store.currentPlayingPlaylist && !store.currentPlayingPlaylist.published) || 
+                        !store.currentPlayingPlaylist}/>
                 </Tabs>
                 <Box sx={{ padding: 1 }}>
                     {value === 0 && (

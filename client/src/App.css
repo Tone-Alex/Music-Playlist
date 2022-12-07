@@ -188,7 +188,9 @@ body {
   min-height: 48px !important;
   display: flex;
   justify-content: center;
-  background-color: rgb(5, 57, 112);
+  /* background-color: rgb(5, 57, 112); */
+  color: rgb(5, 57, 112);
+  background-color: #f2f26e;
   border-radius: 10px;
 }
 
@@ -222,13 +224,10 @@ body {
 #playlist-workspace {
   position: relative;
   border-radius: 25px;
-  /* left: 0%;
-  top: 10%; */
   width: 100%;
   margin: 0 auto;
-  /* background-color: var(--swatch-accent); */
-  overflow-y: scroll;
 }
+
 
 #playlister-statusbar {
   position: absolute;
@@ -317,10 +316,16 @@ body {
 }
 .current-playing-song a {
   color: white;
+  text-decoration: none;
 }
 
 .published-list-card {
-  background-color: lightblue !important;
+  /* background-color: lightblue !important; */
+  background: linear-gradient(to right, #aac6fb, #74d3cb) !important;
+}
+
+.current-playing-playlist {
+  background:  #f2f26e   !important;
 }
 
 .selected-list-card {
@@ -447,10 +452,6 @@ input {
   flex-direction: column;
   background: var(--swatch-complement);
   cursor: default;
-  /* border-width: 2px; */
-  /* border-color: black; */
-  /* border-style: solid; */
-  /* box-shadow: 5px 10px #888888; */
 }
 
 .song-modal-root > * {

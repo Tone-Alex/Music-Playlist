@@ -29,6 +29,7 @@ export const GlobalStoreActionType = {
     DUPLICATE_LIST: "DUPLICATE_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
+    DELETE_LIST: "DELETE_LIST",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     LOAD_CURRENT_PLAYLISTS: "LOAD_CURRENT_PLAYLISTS",
     LOAD_USER_PLAYLISTS: "LOAD_USER_PLAYLISTS",
@@ -318,6 +319,25 @@ function GlobalStoreContextProvider(props) {
                     listNameActive: false,
                     listIdMarkedForDeletion: payload.id,
                     listMarkedForDeletion: payload.playlist,
+                    sort: store.sort,
+                    searchResult: store.searchResult
+                });
+            }
+            case GlobalStoreActionType.DELETE_LIST: {
+                return setStore({
+                    currentScreen: store.currentScreen,
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentPlaylists: payload,
+                    currentList: null,
+                    currentPlayingPlaylist: null,
+                    currentPlayingSong: null,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null,
                     sort: store.sort,
                     searchResult: store.searchResult
                 });
@@ -688,12 +708,12 @@ function GlobalStoreContextProvider(props) {
 
     store.searchPlaylist = function(keyword) {
         async function asyncSearchPlaylist(keyword) {
-            let word = keyword.trim();
+            let word = keyword.trim().toLowerCase();
             let response = await api.getPlaylists();
             if (response.data.success) {
                 let playlists = response.data.playlists
                 let filteredPlaylists = playlists.filter(list => {
-                    return list.name.startsWith(word)
+                    return list.name.toLowerCase().startsWith(word)
                 });
                 storeReducer({
                     type: GlobalStoreActionType.SET_SEARCH_RESULT,
@@ -815,8 +835,16 @@ function GlobalStoreContextProvider(props) {
         async function processDelete(id) {
             let response = await api.deletePlaylistById(id);
             if (response.data.success) {
-                // store.loadIdNamePairs();
-                store.loadAllPlaylists();
+                response = await api.getPlaylists();
+                if (response.data.success) {
+                    let playlistArray = response.data.playlists;
+                    playlistArray = store.sortPlaylists(store.sort, playlistArray);
+                    storeReducer({
+                        type: GlobalStoreActionType.DELETE_LIST,
+                        payload: playlistArray
+                    });
+                }
+                // store.loadAllPlaylists();
                 history.push("/");
             } else {
                 console.log("FAILED TO RECEIVE SUCCESS ");
@@ -1042,6 +1070,7 @@ function GlobalStoreContextProvider(props) {
                 let playlist = playlistsArray.find(list => list._id === id);
                 if (playlist) {
                     if (response.data.success) {
+                        tps.clearAllTransactions();
                         storeReducer({
                             type: GlobalStoreActionType.SET_CURRENT_LIST,
                             payload: playlist
@@ -1283,10 +1312,6 @@ function GlobalStoreContextProvider(props) {
         async function asyncUpdateCurrentList() {
             let response = await api.updatePlaylistById(store.currentList._id, store.currentList);
             if (response.data.success) {
-                response = await api.getPlaylistById(response.data.id);
-                if (response.data.success) {
-                    console.log(JSON.stringify(response.data.playlist));
-                }
                 storeReducer({
                     type: GlobalStoreActionType.SET_CURRENT_LIST,
                     payload: store.currentList
@@ -1294,19 +1319,6 @@ function GlobalStoreContextProvider(props) {
             }
         }
         asyncUpdateCurrentList();
-    }
-
-    store.updateCurrentListWithNew = function(list) {
-        async function asyncUpdateCurrentList(list) {
-            const response = await api.updatePlaylistById(list._id, list);
-            if (response.data.success) {
-                storeReducer({
-                    type: GlobalStoreActionType.SET_CURRENT_LIST,
-                    payload: list
-                });
-            }
-        }
-        asyncUpdateCurrentList(list);
     }
 
     store.undo = function () {

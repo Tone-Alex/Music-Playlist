@@ -25,30 +25,6 @@ function Statusbar() {
         store.createNewList();
     }
 
-    let text ="";
-    // if (store.currentList && auth.loggedIn) {
-    //     text = store.currentList.name;
-    //     return (
-    //         <div id="playlister-statusbar">
-    //             <Typography variant="h4">{text}</Typography>
-    //         </div>
-    //     );
-    // } else {
-    //     return (
-    //         <div id='list-selector-heading'>
-    //             <Fab 
-    //                 color="primary" 
-    //                 aria-label="add"
-    //                 id="add-list-button"
-    //                 onClick={handleCreateNewList}
-    //                 disabled={store.listNameActive}
-    //             >
-    //                 <AddIcon />
-    //             </Fab>
-    //             <Typography variant="h2">Your Lists</Typography>
-    //         </div>
-    //     )
-    // }
     if ((auth.loggedIn || auth.guest) && store.currentScreen === "HOME") {
         return (
             <div id='list-selector-heading'>
@@ -57,7 +33,7 @@ function Statusbar() {
                     aria-label="add"
                     id="add-list-button"
                     onClick={handleCreateNewList}
-                    disabled={store.listNameActive}
+                    disabled={store.listNameActive || store.currentList}
                 >
                     <AddIcon />
                 </Fab>

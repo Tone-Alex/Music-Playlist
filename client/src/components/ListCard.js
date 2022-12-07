@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth';
 import Box from '@mui/material/Box';
 import ThumbDown from '@mui/icons-material/ThumbDown';
 import ThumbUp from '@mui/icons-material/ThumbUp';
@@ -20,6 +21,7 @@ import { Collapse, Typography } from '@mui/material';
     @author McKilla Gorilla
 */
 function ListCard(props) {
+    const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
@@ -94,13 +96,6 @@ function ListCard(props) {
         setEditActive(newActive);
     }
 
-    async function handleDeleteList(event, id) {
-        event.stopPropagation();
-        let _id = event.target.id;
-        _id = ("" + _id).substring("delete-list-".length);
-        store.markListForDeletion(id);
-    }
-
     async function handleKeyPress(event) {
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
@@ -145,9 +140,11 @@ function ListCard(props) {
     if (selected) {
         selectClass = "selected-list-card";
     }
-    let publishedClass = "";
     if (published) {
-        publishedClass = "published-list-card"
+        selectClass += " published-list-card"
+    }
+    if (store.currentPlayingPlaylist && store.currentPlayingPlaylist._id === playlist._id) {
+        selectClass += " current-playing-playlist"
     }
 
     let cardStatus = false;
@@ -157,11 +154,12 @@ function ListCard(props) {
     let cardElement =
         <ListItem
             id={playlist._id}
-            className={selectClass + " " + publishedClass}
+            className={selectClass}
             key={playlist._id}
             // sx={{ marginTop: '15px', p: 1, backgroundColor: '#e1e4cb'}}
             sx={{ marginTop: '15px', p: 1}}
-            style={{ width: '100%', fontFamily: 'Arial', fontSize: '16pt', fontWeight: 'bold', borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
+            style={{ width: '100%', fontFamily: 'Arial', fontSize: '16pt', fontWeight: 'bold', 
+            borderRadius: '25px', display: 'flex', flexDirection: 'column'}}
             button
             onClick={handleClick}
             // disabled={store.listNameActive}
@@ -176,13 +174,13 @@ function ListCard(props) {
                 </div>
                 <div style={{display: 'flex', paddingRight: '15%'}}>
                     <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
-                        <IconButton className='likeIcon' aria-label='like' onClick={handleLike}>
+                        <IconButton className='likeIcon' aria-label='like' onClick={handleLike} disabled={!auth.loggedIn}>
                             <ThumbUp style={{fontSize:'20pt'}} />
                             {likes}
                         </IconButton>
                     </Box>
                     <Box sx={{ p: 1, visibility: playlist.published ? "visible" : "hidden"}}>
-                        <IconButton className='dislikeIcon' onClick={handleDislike} aria-label='dislike'>
+                        <IconButton className='dislikeIcon' onClick={handleDislike} aria-label='dislike' disabled={!auth.loggedIn}>
                             <ThumbDown style={{fontSize:'20pt'}} />
                             {dislikes}
                         </IconButton>
@@ -200,11 +198,11 @@ function ListCard(props) {
                     <Box sx={{ p: 1, color: 'green', visibility: playlist.published ? "visible" : "hidden"}}>
                         Published {new Date(playlist.publishedDate).toLocaleDateString('en-us', {year:"numeric", month:"short", day:"numeric"})}
                         </Box>
-                    <Box sx={{color: 'red', visibility: playlist.published ? "visible" : "hidden"}}>Listens: {listens}</Box>
+                    <Box sx={{color: '#b60404', visibility: playlist.published ? "visible" : "hidden"}}>Listens: {listens}</Box>
                 </div>
                 <div>
                     <Box sx={{ p: 1 }}>
-                        <IconButton className='editIcon' onClick={handleArrowClick} aria-label='edit'>
+                        <IconButton className='editIcon' onClick={handleArrowClick} aria-label='edit' disabled={store.currentList && store.currentList._id !== playlist._id}>
                             {open ? <KeyboardDoubleArrowUp style={{fontSize:'24pt'}}/> : <KeyboardDoubleArrowDown style={{fontSize:'24pt'}} />}
                         </IconButton>
                     </Box>

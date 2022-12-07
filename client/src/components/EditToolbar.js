@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth';
 import Button from '@mui/material/Button';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
@@ -13,6 +14,7 @@ import UndoIcon from '@mui/icons-material/Undo';
 */
 function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const history = useHistory();
 
     function handleUndo(event) {
@@ -85,6 +87,7 @@ function EditToolbar() {
                 </Button>
                 <Button 
                     disabled={!store.currentList}
+                    style={{visibility: auth.loggedIn ? "visible" : "hidden"}}
                     id='duplicate-playlist-button'
                     onClick={handleDuplicateList}
                     variant="contained">

@@ -119,7 +119,6 @@ export default function YouTubePlayer() {
     let songPlayer = "";
     if (currentPlayingSong) {
         songPlayer = <YouTube
-            // videoId={playlist[currentSong]}
             videoId={currentPlayingSong.youTubeId}
             opts={playerOptions}
             onReady={onPlayerReady}
@@ -129,15 +128,6 @@ export default function YouTubePlayer() {
 
     return (
         <div>
-            {/* <Box sx={{visibility: currentPlayingSong ? "visible" : "hidden"}}>
-            <YouTube
-            // videoId={playlist[currentSong]}
-            videoId={currentPlayingSong.youTubeId}
-            opts={playerOptions}
-            onReady={onPlayerReady}
-            onStateChange={onPlayerStateChange}
-            />
-            </Box> */}
             {songPlayer}
 
             <div id="playing-song-container">
